@@ -80,7 +80,73 @@ function getDashboardSettings() {
         settings.quoteEn = 'Live the life you want.';
     }
 
+    if (settings.status === undefined) {
+        settings.status = 'online';
+    }
+
     return settings;
+
+}
+
+// =========================================================
+// ONLINE / OFFLINE STATUS
+// =========================================================
+
+function getStatus() {
+
+    const settings = getDashboardSettings();
+
+    return settings.status === 'offline' ? 'offline' : 'online';
+
+}
+
+function setStatus(status) {
+
+    const settings = getDashboardSettings();
+
+    settings.status = status === 'offline' ? 'offline' : 'online';
+
+    saveDashboardSettings();
+
+}
+
+function getStatusLabel(status) {
+
+    return status === 'offline'
+        ? '● ออฟไลน์'
+        : '● ออนไลน์';
+
+}
+
+// Updates every status text and every online-dot in the dashboard
+// to match the currently saved status.
+function refreshStatusDisplays(dashboard) {
+
+    const status = getStatus();
+
+    dashboard
+        .querySelectorAll('[data-status-text]')
+        .forEach((element) => {
+
+            element.textContent = getStatusLabel(status);
+
+            element.classList.toggle(
+                'is-offline',
+                status === 'offline'
+            );
+
+        });
+
+    dashboard
+        .querySelectorAll('.online-dot')
+        .forEach((dot) => {
+
+            dot.classList.toggle(
+                'offline',
+                status === 'offline'
+            );
+
+        });
 
 }
 
@@ -155,6 +221,13 @@ function renderUserAvatar(container, size) {
 
     container.innerHTML = '';
 
+    // The picture/placeholder lives in its own circular, clipped
+    // wrapper so the online-dot (a sibling) never gets cut off by
+    // the image's rounded corners.
+    const visual = document.createElement('div');
+
+    visual.className = 'avatar-visual';
+
     if (avatarUrl) {
 
         const img = document.createElement('img');
@@ -165,11 +238,11 @@ function renderUserAvatar(container, size) {
 
         img.addEventListener('error', () => {
 
-            container.innerHTML = `<div class="avatar-placeholder">${initial}</div>`;
+            visual.innerHTML = `<div class="avatar-placeholder">${initial}</div>`;
 
         });
 
-        container.appendChild(img);
+        visual.appendChild(img);
 
     } else {
 
@@ -178,15 +251,22 @@ function renderUserAvatar(container, size) {
         placeholder.className = 'avatar-placeholder';
         placeholder.textContent = initial;
 
-        container.appendChild(placeholder);
+        visual.appendChild(placeholder);
 
     }
+
+    container.appendChild(visual);
 
     if (size === 'small') {
 
         const dot = document.createElement('span');
 
         dot.className = 'online-dot';
+
+        dot.classList.toggle(
+            'offline',
+            getStatus() === 'offline'
+        );
 
         container.appendChild(dot);
 
@@ -575,7 +655,11 @@ function createDashboard(optionsMenu) {
                                         #0001-9987
                                     </p>
 
-                                    <span>
+                                    <span
+                                        class="status-toggle"
+                                        data-status-text
+                                        title="แตะเพื่อสลับสถานะ"
+                                    >
                                         ● ออนไลน์
                                     </span>
 
@@ -1000,7 +1084,11 @@ function createDashboard(optionsMenu) {
                                 #0001-9987
                             </p>
 
-                            <span class="status-badge">
+                            <span
+                                class="status-badge status-toggle"
+                                data-status-text
+                                title="แตะเพื่อสลับสถานะ"
+                            >
                                 ● ออนไลน์
                             </span>
 
@@ -1317,6 +1405,29 @@ function createDashboard(optionsMenu) {
     // =====================================================
 
     refreshUserInfo(dashboard);
+    refreshStatusDisplays(dashboard);
+
+    dashboard
+        .querySelectorAll('.status-toggle')
+        .forEach((element) => {
+
+            element.addEventListener(
+                'click',
+                () => {
+
+                    const nextStatus =
+                        getStatus() === 'online'
+                            ? 'offline'
+                            : 'online';
+
+                    setStatus(nextStatus);
+
+                    refreshStatusDisplays(dashboard);
+
+                }
+            );
+
+        });
 
 
     // =====================================================
@@ -1599,6 +1710,7 @@ function createDashboard(optionsMenu) {
             // Refresh {{user}}'s name/avatar in case the persona
             // changed since the dashboard was created.
             refreshUserInfo(dashboard);
+            refreshStatusDisplays(dashboard);
 
             dashboard.classList.add(
                 'open'
