@@ -1,118 +1,211 @@
 function init() {
-    console.log('[Magic System UI] Loaded');
 
-    // ป้องกันสร้างซ้ำ
-    if (document.getElementById('magic-system-home')) {
+    console.log('[Magic System UI] Initializing...');
+
+    // ป้องกันการสร้างเมนูซ้ำ
+    if (document.getElementById('magic-system-menu')) {
         return;
     }
 
-    // =========================
-    // HOME BUTTON
-    // =========================
+    // รอให้ Chat Options ของ SillyTavern โหลดก่อน
+    const waitForMenu = setInterval(() => {
 
-    const homeButton = document.createElement('button');
+        const optionsMenu = document.querySelector('#options .options-content');
 
-    homeButton.id = 'magic-system-home';
-    homeButton.type = 'button';
-    homeButton.title = 'Open Magic System';
+        if (!optionsMenu) {
+            return;
+        }
 
-    homeButton.innerHTML = `
-        <span class="magic-system-home-icon">✦</span>
-    `;
+        clearInterval(waitForMenu);
 
-    document.body.appendChild(homeButton);
+        // ==============================
+        // MAGIC SYSTEM MENU ITEM
+        // ==============================
 
+        const menuItem = document.createElement('a');
 
-    // =========================
-    // SYSTEM OVERLAY
-    // =========================
+        menuItem.id = 'magic-system-menu';
 
-    const overlay = document.createElement('div');
+        menuItem.innerHTML = `
+            <i class="fa-lg fa-solid fa-wand-magic-sparkles"></i>
+            <span>Magic System</span>
+        `;
 
-    overlay.id = 'magic-system-overlay';
+        // ใส่ไว้ด้านบนของเมนู
+        optionsMenu.prepend(menuItem);
 
-    overlay.innerHTML = `
-        <div class="magic-system-window">
+        // ==============================
+        // SYSTEM WINDOW
+        // ==============================
 
-            <div class="magic-system-header">
+        const overlay = document.createElement('div');
 
-                <div>
-                    <div class="system-small-title">
-                        PLAYER INTERFACE
-                    </div>
+        overlay.id = 'magic-system-overlay';
 
-                    <div class="system-title">
-                        THE SYSTEM
-                    </div>
-                </div>
+        overlay.innerHTML = `
 
-                <button
-                    id="magic-system-close"
-                    type="button"
-                >
-                    ×
-                </button>
+            <div class="magic-system-window">
 
-            </div>
+                <div class="magic-system-header">
 
-
-            <div class="system-tabs">
-
-                <button class="system-tab active">
-                    STATUS
-                </button>
-
-                <button class="system-tab">
-                    MISSIONS
-                </button>
-
-                <button class="system-tab">
-                    SKILLS
-                </button>
-
-                <button class="system-tab">
-                    SUMMONS
-                </button>
-
-                <button class="system-tab">
-                    INVENTORY
-                </button>
-
-            </div>
-
-
-            <div class="system-content">
-
-                <div class="system-section">
-
-                    <div class="section-title">
-                        PLAYER STATUS
-                    </div>
-
-                    <div class="status-card">
-
-                        <div class="status-name">
-                            PLAYER
+                    <div>
+                        <div class="system-small-title">
+                            PLAYER INTERFACE
                         </div>
 
-                        <div class="status-row">
-                            <span>HP</span>
+                        <div class="system-title">
+                            THE SYSTEM
+                        </div>
+                    </div>
 
-                            <div class="status-bar">
-                                <div class="status-fill hp"></div>
+                    <button
+                        id="magic-system-close"
+                        type="button"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+                <div class="system-tabs">
+
+                    <button class="system-tab active">
+                        STATUS
+                    </button>
+
+                    <button class="system-tab">
+                        MISSIONS
+                    </button>
+
+                    <button class="system-tab">
+                        SKILLS
+                    </button>
+
+                    <button class="system-tab">
+                        SUMMONS
+                    </button>
+
+                    <button class="system-tab">
+                        INVENTORY
+                    </button>
+
+                </div>
+
+
+                <div class="system-content">
+
+                    <div class="system-section">
+
+                        <div class="section-title">
+                            PLAYER STATUS
+                        </div>
+
+                        <div class="status-card">
+
+                            <div class="status-name">
+                                PLAYER
                             </div>
 
-                            <span>100 / 100</span>
-                        </div>
+                            <div class="status-row">
 
-                        <div class="status-row">
-                            <span>MP</span>
+                                <span>HP</span>
 
-                            <div class="status-bar">
-                                <div class="status-fill mp"></div>
+                                <div class="status-bar">
+                                    <div class="status-fill hp"></div>
+                                </div>
+
+                                <span>100 / 100</span>
+
                             </div>
 
-                            <span>80 / 100</span>
+
+                            <div class="status-row">
+
+                                <span>MP</span>
+
+                                <div class="status-bar">
+                                    <div class="status-fill mp"></div>
+                                </div>
+
+                                <span>80 / 100</span>
+
+                            </div>
+
+
+                            <div class="status-row">
+
+                                <span>EXP</span>
+
+                                <div class="status-bar">
+                                    <div class="status-fill exp"></div>
+                                </div>
+
+                                <span>65%</span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="system-section">
+
+                        <div class="section-title">
+                            ATTRIBUTES
+                        </div>
+
+                        <div class="attribute-grid">
+
+                            <div class="attribute-card">
+                                <span>STR</span>
+                                <strong>12</strong>
+                                <button>+</button>
+                            </div>
+
+                            <div class="attribute-card">
+                                <span>AGI</span>
+                                <strong>15</strong>
+                                <button>+</button>
+                            </div>
+
+                            <div class="attribute-card">
+                                <span>INT</span>
+                                <strong>18</strong>
+                                <button>+</button>
+                            </div>
+
+                            <div class="attribute-card">
+                                <span>VIT</span>
+                                <strong>10</strong>
+                                <button>+</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="system-section">
+
+                        <div class="section-title">
+                            SYSTEM RECORD
+                        </div>
+
+                        <div class="record-card">
+                            <span>Current Level</span>
+                            <strong>Lv. 01</strong>
+                        </div>
+
+                        <div class="record-card">
+                            <span>Available Points</span>
+                            <strong>05</strong>
+                        </div>
+
+                        <div class="record-card">
+                            <span>System Status</span>
+                            <strong>ONLINE</strong>
                         </div>
 
                     </div>
@@ -120,80 +213,66 @@ function init() {
                 </div>
 
 
-                <div class="system-section">
+                <div class="system-footer">
 
-                    <div class="section-title">
-                        ATTRIBUTES
-                    </div>
+                    <span>
+                        MAGIC SYSTEM UI
+                    </span>
 
-                    <div class="attribute-grid">
-
-                        <div class="attribute-card">
-                            <span>STR</span>
-                            <strong>12</strong>
-                            <button>+</button>
-                        </div>
-
-                        <div class="attribute-card">
-                            <span>AGI</span>
-                            <strong>15</strong>
-                            <button>+</button>
-                        </div>
-
-                        <div class="attribute-card">
-                            <span>INT</span>
-                            <strong>18</strong>
-                            <button>+</button>
-                        </div>
-
-                        <div class="attribute-card">
-                            <span>VIT</span>
-                            <strong>10</strong>
-                            <button>+</button>
-                        </div>
-
-                    </div>
+                    <span>
+                        VERSION 1.0.0
+                    </span>
 
                 </div>
 
             </div>
+        `;
+
+        document.body.appendChild(overlay);
 
 
-            <div class="system-footer">
-                <span>MAGIC SYSTEM UI</span>
-                <span>VERSION 1.0.0</span>
-            </div>
+        // ==============================
+        // OPEN SYSTEM
+        // ==============================
 
-        </div>
-    `;
+        menuItem.addEventListener('click', (event) => {
 
-    document.body.appendChild(overlay);
+            event.preventDefault();
 
+            overlay.classList.add('open');
 
-    // =========================
-    // OPEN
-    // =========================
-
-    homeButton.addEventListener('click', () => {
-        overlay.classList.add('open');
-    });
+        });
 
 
-    // =========================
-    // CLOSE
-    // =========================
+        // ==============================
+        // CLOSE SYSTEM
+        // ==============================
 
-    const closeButton =
-        document.getElementById('magic-system-close');
+        const closeButton =
+            document.getElementById('magic-system-close');
 
-    closeButton.addEventListener('click', () => {
-        overlay.classList.remove('open');
-    });
+        closeButton.addEventListener('click', () => {
+
+            overlay.classList.remove('open');
+
+        });
 
 
-    console.log('[Magic System UI] Ready');
+        // คลิกพื้นที่มืดด้านนอกเพื่อปิด
+        overlay.addEventListener('click', (event) => {
+
+            if (event.target === overlay) {
+
+                overlay.classList.remove('open');
+
+            }
+
+        });
+
+
+        console.log('[Magic System UI] Ready.');
+
+    }, 500);
 }
 
-
-// SillyTavern Extension entry point
 export { init };
