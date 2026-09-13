@@ -1,0 +1,482 @@
+/* =========================================
+   MAGIC SYSTEM UI
+   ========================================= */
+
+#magic-system-home {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+
+    width: 72px;
+    height: 72px;
+
+    border-radius: 50%;
+    border: 1px solid rgba(130, 210, 255, 0.8);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(150, 225, 255, 0.35) 0%,
+            rgba(40, 90, 150, 0.2) 45%,
+            rgba(5, 10, 30, 0.9) 100%
+        );
+
+    color: #dff8ff;
+    font-size: 30px;
+
+    cursor: pointer;
+
+    z-index: 99999;
+
+    box-shadow:
+        0 0 10px rgba(100, 210, 255, 0.8),
+        0 0 25px rgba(70, 150, 255, 0.45),
+        inset 0 0 15px rgba(150, 230, 255, 0.3);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#magic-system-home:hover {
+    transform: scale(1.08);
+
+    box-shadow:
+        0 0 15px rgba(150, 230, 255, 1),
+        0 0 40px rgba(70, 160, 255, 0.7),
+        inset 0 0 20px rgba(180, 240, 255, 0.5);
+}
+
+#magic-system-home:active {
+    transform: scale(0.94);
+}
+
+.magic-system-home-icon {
+    display: flex;
+
+    width: 100%;
+    height: 100%;
+
+    align-items: center;
+    justify-content: center;
+
+    text-shadow:
+        0 0 8px #b9efff,
+        0 0 18px #67cfff;
+}
+
+
+/* =========================================
+   SYSTEM OVERLAY
+   ========================================= */
+
+#magic-system-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 99998;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(20, 55, 90, 0.35),
+            rgba(2, 5, 15, 0.96) 70%
+        );
+
+    backdrop-filter: blur(8px);
+}
+
+#magic-system-overlay.open {
+    display: flex;
+}
+
+
+/* =========================================
+   MAIN WINDOW
+   ========================================= */
+
+.magic-system-window {
+    width: min(1100px, 90vw);
+    height: min(720px, 88vh);
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(100, 200, 255, 0.55);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(8, 20, 38, 0.98),
+            rgba(3, 8, 20, 0.98)
+        );
+
+    box-shadow:
+        0 0 20px rgba(50, 170, 255, 0.25),
+        0 0 80px rgba(30, 100, 200, 0.18),
+        inset 0 0 40px rgba(40, 130, 200, 0.08);
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.magic-system-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 22px 28px;
+
+    border-bottom: 1px solid rgba(100, 200, 255, 0.25);
+}
+
+.system-small-title {
+    color: rgba(170, 220, 255, 0.65);
+
+    font-size: 11px;
+    letter-spacing: 4px;
+}
+
+.system-title {
+    margin-top: 4px;
+
+    color: #e4f8ff;
+
+    font-size: 28px;
+    font-weight: 600;
+
+    letter-spacing: 5px;
+
+    text-shadow:
+        0 0 8px rgba(120, 220, 255, 0.8);
+}
+
+#magic-system-close {
+    width: 38px;
+    height: 38px;
+
+    border: 1px solid rgba(130, 210, 255, 0.4);
+
+    background: rgba(20, 60, 90, 0.35);
+
+    color: #ccefff;
+
+    font-size: 25px;
+
+    cursor: pointer;
+}
+
+#magic-system-close:hover {
+    background: rgba(80, 170, 230, 0.25);
+
+    box-shadow:
+        0 0 15px rgba(100, 210, 255, 0.5);
+}
+
+
+/* =========================================
+   TABS
+   ========================================= */
+
+.system-tabs {
+    display: flex;
+
+    border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+
+    background: rgba(5, 15, 30, 0.8);
+}
+
+.system-tab {
+    flex: 1;
+
+    padding: 15px 8px;
+
+    border: none;
+    border-right: 1px solid rgba(100, 200, 255, 0.12);
+
+    background: transparent;
+
+    color: rgba(180, 220, 245, 0.55);
+
+    font-size: 12px;
+    letter-spacing: 2px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.system-tab:hover,
+.system-tab.active {
+    color: #dff8ff;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(70, 160, 220, 0.18),
+            rgba(30, 90, 150, 0.08)
+        );
+
+    box-shadow:
+        inset 0 -2px 0 rgba(120, 220, 255, 0.8);
+}
+
+
+/* =========================================
+   CONTENT
+   ========================================= */
+
+.system-content {
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 25px 30px;
+}
+
+.system-section {
+    margin-bottom: 28px;
+}
+
+.section-title {
+    margin-bottom: 12px;
+
+    color: rgba(150, 220, 255, 0.75);
+
+    font-size: 12px;
+    letter-spacing: 3px;
+}
+
+
+/* =========================================
+   STATUS CARD
+   ========================================= */
+
+.status-card {
+    padding: 20px;
+
+    border: 1px solid rgba(100, 190, 240, 0.25);
+
+    background:
+        rgba(10, 30, 50, 0.55);
+
+    box-shadow:
+        inset 0 0 25px rgba(40, 150, 220, 0.05);
+}
+
+.status-name {
+    margin-bottom: 18px;
+
+    color: #e8faff;
+
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
+.status-row {
+    display: grid;
+
+    grid-template-columns: 45px 1fr 90px;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 12px 0;
+
+    color: #b9d9e8;
+
+    font-size: 12px;
+}
+
+.status-bar {
+    height: 7px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(100, 200, 255, 0.3);
+
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.status-fill {
+    height: 100%;
+}
+
+.status-fill.hp {
+    width: 82%;
+
+    background: #63d8ff;
+
+    box-shadow: 0 0 10px rgba(80, 210, 255, 0.8);
+}
+
+.status-fill.mp {
+    width: 65%;
+
+    background: #a78bfa;
+
+    box-shadow: 0 0 10px rgba(150, 110, 255, 0.8);
+}
+
+.status-fill.exp {
+    width: 65%;
+
+    background: #8ee6c4;
+
+    box-shadow: 0 0 10px rgba(100, 220, 180, 0.8);
+}
+
+
+/* =========================================
+   ATTRIBUTES
+   ========================================= */
+
+.attribute-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 12px;
+}
+
+.attribute-card {
+    position: relative;
+
+    padding: 18px;
+
+    border: 1px solid rgba(100, 190, 240, 0.25);
+
+    background:
+        rgba(10, 28, 48, 0.65);
+
+    color: rgba(180, 220, 240, 0.7);
+}
+
+.attribute-card strong {
+    display: block;
+
+    margin-top: 8px;
+
+    color: #e7f9ff;
+
+    font-size: 25px;
+}
+
+.attribute-card button {
+    position: absolute;
+
+    top: 12px;
+    right: 12px;
+
+    width: 25px;
+    height: 25px;
+
+    border: 1px solid rgba(120, 210, 255, 0.35);
+
+    background: rgba(50, 130, 180, 0.15);
+
+    color: #bcefff;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   SYSTEM RECORD
+   ========================================= */
+
+.record-card {
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 14px 18px;
+
+    margin-bottom: 8px;
+
+    border: 1px solid rgba(100, 190, 240, 0.18);
+
+    background: rgba(10, 25, 42, 0.55);
+
+    color: rgba(180, 220, 240, 0.65);
+}
+
+.record-card strong {
+    color: #dff8ff;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+.system-footer {
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 12px 25px;
+
+    border-top: 1px solid rgba(100, 200, 255, 0.2);
+
+    color: rgba(150, 200, 220, 0.45);
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 700px) {
+
+    .magic-system-window {
+        width: 95vw;
+        height: 92vh;
+    }
+
+    .system-title {
+        font-size: 20px;
+    }
+
+    .system-tabs {
+        overflow-x: auto;
+    }
+
+    .system-tab {
+        min-width: 110px;
+    }
+
+    .attribute-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .status-row {
+        grid-template-columns:
+            35px 1fr;
+    }
+
+    .status-row span:last-child {
+        display: none;
+    }
+
+  }
