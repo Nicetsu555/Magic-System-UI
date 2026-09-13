@@ -2023,11 +2023,9 @@
     border-radius: 22px;
 
     background:
-        radial-gradient(
-            circle at 88% 12%,
-            rgba(255,255,255,0.5),
-            transparent 45%
+        url('https://files.catbox.moe/9waoat.png') center / cover no-repeat;
         ),
+   
         linear-gradient(
             135deg,
             rgba(251,218,232,0.85),
