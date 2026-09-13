@@ -89,10 +89,11 @@
 
     align-items: center;
 
-    gap: 25px;
+    gap: clamp(8px, 3vw, 25px);
 
     padding:
-        14px 28px;
+        14px
+        clamp(12px, 4vw, 28px);
 
     background:
         rgba(255, 250, 253, 0.52);
@@ -118,13 +119,24 @@
 
     gap: 12px;
 
-    min-width: 220px;
+    min-width: 0;
+
+    flex: 0 1 auto;
+
+    overflow: hidden;
+}
+
+.dashboard-brand > div {
+
+    min-width: 0;
 }
 
 .dashboard-logo {
 
     width: 42px;
     height: 42px;
+
+    flex-shrink: 0;
 
     display: flex;
 
@@ -149,18 +161,26 @@
 
 .dashboard-title {
 
+    overflow: hidden;
+
     font-family:
         Georgia,
         serif;
 
-    font-size: 20px;
+    font-size: clamp(13px, 3.2vw, 20px);
 
-    letter-spacing: 4px;
+    letter-spacing: 2px;
 
     color: #39333d;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
 }
 
 .dashboard-subtitle {
+
+    overflow: hidden;
 
     margin-top: -2px;
 
@@ -171,6 +191,10 @@
     font-style: italic;
 
     letter-spacing: 1px;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
 }
 
 
@@ -184,12 +208,18 @@
 
     z-index: 100;
 
-    width: 250px;
+    flex: 1 1 140px;
+
+    min-width: 0;
+
+    max-width: 250px;
 }
 
 .dashboard-selector-button {
 
     width: 100%;
+
+    min-width: 0;
 
     display: flex;
 
@@ -253,11 +283,23 @@
 
     flex: 1;
 
+    min-width: 0;
+
     display: flex;
 
     flex-direction: column;
 
     text-align: left;
+}
+
+.dashboard-selector-button strong,
+.dashboard-selector-button small {
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
 }
 
 .dashboard-selector-button strong {
@@ -276,9 +318,16 @@
 
 .dashboard-selector-button > i {
 
+    flex-shrink: 0;
+
     color: #9d8795;
 
     font-size: 11px;
+}
+
+.dashboard-current-icon {
+
+    flex-shrink: 0;
 }
 
 
@@ -388,18 +437,22 @@
 
 .dashboard-top-actions {
 
+    flex-shrink: 0;
+
     margin-left: auto;
 
     display: flex;
 
     align-items: center;
 
-    gap: 14px;
+    gap: clamp(6px, 2vw, 14px);
 }
 
 .dashboard-icon-button {
 
     position: relative;
+
+    flex-shrink: 0;
 
     width: 38px;
     height: 38px;
@@ -463,8 +516,15 @@
 
 .dashboard-close {
 
+    flex-shrink: 0;
+
     width: 38px;
     height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
 
     border: none;
 
@@ -476,6 +536,8 @@
     color: #756775;
 
     font-size: 24px;
+
+    line-height: 1;
 
     cursor: pointer;
 }
@@ -712,6 +774,8 @@
 
 .profile-avatar {
 
+    /* NOTE: no overflow:hidden here on purpose - it must NOT clip
+       the online-dot, which is a sibling positioned at the edge. */
     position: relative;
 
     width: 86px;
@@ -720,11 +784,6 @@
     flex-shrink: 0;
 
     border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
 
     background:
         linear-gradient(
@@ -740,6 +799,23 @@
     box-shadow:
         0 8px 20px
         rgba(90,65,90,0.12);
+}
+
+/* Inner circle that actually clips the picture/placeholder.
+   Keeping the clip on this inner element (instead of on
+   .profile-avatar) is what keeps the online-dot sitting
+   on the outside edge instead of sinking inside. */
+.avatar-visual {
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
 
     overflow: hidden;
 }
@@ -762,19 +838,17 @@
     height: 100%;
 
     object-fit: cover;
-
-    border-radius: 50%;
 }
 
 .online-dot {
 
     position: absolute;
 
-    right: 3px;
-    bottom: 7px;
+    right: 0;
+    bottom: 4px;
 
-    width: 13px;
-    height: 13px;
+    width: 15px;
+    height: 15px;
 
     border-radius: 50%;
 
@@ -783,6 +857,15 @@
     border:
         3px solid
         #fff;
+
+    box-shadow:
+        0 2px 6px
+        rgba(0,0,0,0.15);
+}
+
+.online-dot.offline {
+
+    background: #b0a3ab;
 }
 
 .account-info h2 {
@@ -813,6 +896,30 @@
     color: #6fa17e;
 
     font-size: 10px;
+}
+
+.status-toggle {
+
+    cursor: pointer;
+
+    user-select: none;
+
+    border-radius: 20px;
+
+    padding: 2px 8px;
+
+    margin-left: -8px;
+}
+
+.status-toggle:hover {
+
+    background:
+        rgba(140,120,140,0.1);
+}
+
+.status-toggle.is-offline {
+
+    color: #9a8f96;
 }
 
 .account-quote {
@@ -1750,28 +1857,14 @@
 
     .dashboard-topbar {
 
-        gap: 10px;
-
         padding:
             10px 14px;
-    }
-
-    .dashboard-brand {
-
-        min-width: auto;
     }
 
     .dashboard-logo {
 
         width: 36px;
         height: 36px;
-    }
-
-    .dashboard-title {
-
-        font-size: 14px;
-
-        letter-spacing: 2px;
     }
 
     .dashboard-subtitle {
@@ -1781,12 +1874,7 @@
 
     .dashboard-selector {
 
-        width: 190px;
-    }
-
-    .dashboard-top-actions {
-
-        gap: 5px;
+        flex-basis: 120px;
     }
 
     .dashboard-time {
@@ -1838,6 +1926,48 @@
             90px 1fr 55px;
 
         gap: 8px;
+    }
+
+}
+
+
+@media (max-width: 420px) {
+
+    .dashboard-subtitle {
+
+        display: none;
+    }
+
+    .dashboard-title {
+
+        font-size: 12px;
+
+        letter-spacing: 1px;
+    }
+
+    .dashboard-selector {
+
+        flex-basis: 90px;
+    }
+
+    .dashboard-current-icon {
+
+        width: 28px;
+        height: 28px;
+    }
+
+    .dashboard-selector-button small {
+
+        display: none;
+    }
+
+    .dashboard-icon-button,
+    .dashboard-close {
+
+        width: 32px;
+        height: 32px;
+
+        font-size: 20px;
     }
 
 }
