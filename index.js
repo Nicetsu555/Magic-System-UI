@@ -1,306 +1,107 @@
 /* =========================================================
-   DASHBOARD
-   SillyTavern Extension
+   DASHBOARD - SillyTavern Extension
    ========================================================= */
 
-const MODULE_NAME = 'Dashboard';
-
 let dashboardOverlay = null;
-let personaSyncTimer = null;
-let clockTimer = null;
 let initialized = false;
+let clockTimer = null;
 
 
 /* =========================================================
-   SILLYTAVERN CONTEXT
+   GET USER NAME
    ========================================================= */
 
-function getSTContext() {
+function getUserName() {
     try {
-        return window.SillyTavern?.getContext?.() || null;
-    } catch (error) {
-        console.warn(`[${MODULE_NAME}] Cannot get SillyTavern context`, error);
-        return null;
-    }
+        const context = window.SillyTavern?.getContext?.();
+
+        if (context?.name1) {
+            return String(context.name1).trim();
+        }
+    } catch (e) {}
+
+    try {
+        const nameInput = document.querySelector('#name1');
+
+        if (nameInput?.value) {
+            return nameInput.value.trim();
+        }
+    } catch (e) {}
+
+    return 'User';
 }
 
 
 /* =========================================================
-   PERSONA
+   GET USER AVATAR
    ========================================================= */
 
-function getPersonaData() {
-    const context = getSTContext();
+function getUserAvatar() {
 
-    let name = 'User';
-
-    try {
-        if (context?.name1) {
-            name = String(context.name1).trim();
-        }
-    } catch (error) {}
-
-    // สำรองด้วย {{user}}
-    if (!name || name === 'User') {
-        try {
-            if (typeof context?.substituteParams === 'function') {
-                const substituted = context.substituteParams('{{user}}');
-
-                if (
-                    substituted &&
-                    substituted !== '{{user}}' &&
-                    substituted.trim()
-                ) {
-                    name = substituted.trim();
-                }
-            }
-        } catch (error) {}
-    }
-
-    // สำรองอีกชั้นจาก DOM
-    if (!name || name === 'User') {
-        try {
-            const nameInput =
-                document.querySelector('#name1') ||
-                document.querySelector('[name="name1"]');
-
-            if (nameInput?.value?.trim()) {
-                name = nameInput.value.trim();
-            }
-        } catch (error) {}
-    }
-
-    let avatar = '';
-
-    /*
-     * พยายามหา avatar ของ Persona ปัจจุบันจาก DOM
-     * ไม่ import personas.js เพื่อป้องกัน extension พัง
-     */
-    const avatarSelectors = [
+    const selectors = [
         '#user_avatar img',
         '#user_avatar',
         '.persona_avatar img',
-        '.persona-avatar img',
-        '[data-persona-avatar] img',
-        '[data-persona-avatar]'
+        '.persona-avatar img'
     ];
 
-    for (const selector of avatarSelectors) {
+    for (const selector of selectors) {
+
         try {
-            const element = document.querySelector(selector);
 
-            if (element) {
-                const src =
-                    element.src ||
-                    element.getAttribute('src') ||
-                    element.style.backgroundImage;
+            const el =
+                document.querySelector(selector);
 
-                if (src) {
-                    avatar = src
-                        .replace(/^url\(["']?/, '')
-                        .replace(/["']?\)$/, '');
+            if (!el) continue;
 
-                    if (avatar) break;
-                }
+            if (el.tagName === 'IMG' && el.src) {
+                return el.src;
             }
-        } catch (error) {}
+
+            const img =
+                el.querySelector?.('img');
+
+            if (img?.src) {
+                return img.src;
+            }
+
+            const bg =
+                getComputedStyle(el).backgroundImage;
+
+            if (
+                bg &&
+                bg !== 'none'
+            ) {
+                return bg
+                    .replace(/^url\(["']?/, '')
+                    .replace(/["']?\)$/, '');
+            }
+
+        } catch (e) {}
     }
 
-    return {
-        name: name || 'User',
-        avatar
-    };
+    return '';
 }
 
 
 /* =========================================================
-   PERSONA SYNC
+   ESCAPE HTML
    ========================================================= */
 
-function syncPersona() {
-    if (!dashboardOverlay) return;
+function escapeHTML(text) {
 
-    const persona = getPersonaData();
-
-    // ชื่อ
-    dashboardOverlay
-        .querySelectorAll('[data-dashboard-user-name]')
-        .forEach(element => {
-            element.textContent = persona.name;
-        });
-
-    // Avatar
-    if (persona.avatar) {
-        dashboardOverlay
-            .querySelectorAll('[data-dashboard-avatar]')
-            .forEach(element => {
-                element.src = persona.avatar;
-                element.style.display = 'block';
-            });
-
-        dashboardOverlay
-            .querySelectorAll('[data-dashboard-large-avatar]')
-            .forEach(element => {
-                element.src = persona.avatar;
-                element.style.display = 'block';
-            });
-    }
-}
-
-
-function setupPersonaSync() {
-    const context = getSTContext();
-
-    syncPersona();
-
-    /*
-     * PERSONA_CHANGED
-     */
-    try {
-        const eventSource = context?.eventSource;
-        const eventTypes =
-            context?.event_types ||
-            context?.eventTypes;
-
-        const personaChanged =
-            eventTypes?.PERSONA_CHANGED;
-
-        if (
-            eventSource &&
-            personaChanged
-        ) {
-            eventSource.on(
-                personaChanged,
-                () => {
-                    setTimeout(syncPersona, 50);
-                }
-            );
-        }
-    } catch (error) {
-        console.warn(
-            `[${MODULE_NAME}] Persona event unavailable`,
-            error
-        );
-    }
-
-    /*
-     * Fallback
-     *
-     * เผื่อ ST รุ่นเก่าหรือบางธีมไม่ได้ส่ง event
-     */
-    let lastName = '';
-    let lastAvatar = '';
-
-    if (personaSyncTimer) {
-        clearInterval(personaSyncTimer);
-    }
-
-    personaSyncTimer = setInterval(() => {
-        const persona = getPersonaData();
-
-        if (
-            persona.name !== lastName ||
-            persona.avatar !== lastAvatar
-        ) {
-            lastName = persona.name;
-            lastAvatar = persona.avatar;
-
-            syncPersona();
-        }
-    }, 1000);
-}
-
-
-/* =========================================================
-   BIO
-   ========================================================= */
-
-const BIO_STORAGE_KEY = 'dashboard_persona_bio';
-
-function getBio() {
-    try {
-        return localStorage.getItem(BIO_STORAGE_KEY) || '';
-    } catch (error) {
-        return '';
-    }
-}
-
-function saveBio(value) {
-    try {
-        localStorage.setItem(
-            BIO_STORAGE_KEY,
-            value
-        );
-    } catch (error) {
-        console.warn(
-            `[${MODULE_NAME}] Cannot save bio`,
-            error
-        );
-    }
-}
-
-
-/* =========================================================
-   HTML HELPERS
-   ========================================================= */
-
-function escapeHTML(value) {
-    return String(value)
+    return String(text)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+
 }
 
 
 /* =========================================================
-   CLOCK
-   ========================================================= */
-
-function updateClock() {
-    if (!dashboardOverlay) return;
-
-    const now = new Date();
-
-    const timeElement =
-        dashboardOverlay.querySelector(
-            '[data-dashboard-clock]'
-        );
-
-    const dateElement =
-        dashboardOverlay.querySelector(
-            '[data-dashboard-date]'
-        );
-
-    if (timeElement) {
-        timeElement.textContent =
-            now.toLocaleTimeString(
-                'th-TH',
-                {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }
-            );
-    }
-
-    if (dateElement) {
-        dateElement.textContent =
-            now.toLocaleDateString(
-                'th-TH',
-                {
-                    weekday: 'short',
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
-                }
-            );
-    }
-}
-
-
-/* =========================================================
-   DASHBOARD HTML
+   CREATE DASHBOARD
    ========================================================= */
 
 function createDashboard() {
@@ -309,26 +110,8 @@ function createDashboard() {
         return dashboardOverlay;
     }
 
-    const persona = getPersonaData();
-
-    const avatarHTML = persona.avatar
-        ? `
-            <img
-                src="${escapeHTML(persona.avatar)}"
-                alt=""
-                data-dashboard-avatar
-            >
-        `
-        : `
-            <div class="dashboard-avatar-placeholder"
-                 data-dashboard-avatar-placeholder>
-                ${escapeHTML(
-                    persona.name
-                        .charAt(0)
-                        .toUpperCase()
-                )}
-            </div>
-        `;
+    const name = getUserName();
+    const avatar = getUserAvatar();
 
     dashboardOverlay =
         document.createElement('div');
@@ -346,39 +129,40 @@ function createDashboard() {
 
                 <div class="dashboard-brand">
 
-                    <div class="dashboard-brand-text">
-                        <div class="dashboard-brand-small">
-                            PERSONAL SPACE
-                        </div>
+                    <div class="dashboard-brand-small">
+                        PERSONAL SPACE
+                    </div>
 
-                        <div class="dashboard-brand-title">
-                            DASHBOARD
-                        </div>
+                    <div class="dashboard-brand-title">
+                        DASHBOARD
                     </div>
 
                 </div>
 
 
-                <div class="dashboard-top-controls">
+                <div class="dashboard-top-right">
 
                     <div class="dashboard-clock">
+
                         <div
+                            class="dashboard-time"
                             data-dashboard-clock>
                             --:--
                         </div>
 
-                        <small
+                        <div
+                            class="dashboard-date"
                             data-dashboard-date>
                             ---
-                        </small>
+                        </div>
+
                     </div>
 
 
                     <button
                         type="button"
-                        class="dashboard-icon-button"
+                        class="dashboard-close"
                         data-dashboard-close
-                        aria-label="Close"
                     >
                         ×
                     </button>
@@ -436,10 +220,8 @@ function createDashboard() {
 
             <!-- CONTENT -->
 
-            <main
-                class="dashboard-content"
-                data-dashboard-content
-            >
+            <main class="dashboard-content">
+
 
                 <!-- HOME -->
 
@@ -450,27 +232,26 @@ function createDashboard() {
 
                     <div class="dashboard-welcome">
 
-                        <div>
-                            <div class="dashboard-eyebrow">
-                                WELCOME BACK
-                            </div>
-
-                            <h1>
-                                Hello,
-                                <span data-dashboard-user-name>
-                                    ${escapeHTML(persona.name)}
-                                </span>
-                            </h1>
-
-                            <p>
-                                Your personal dashboard
-                            </p>
+                        <div class="dashboard-eyebrow">
+                            WELCOME BACK
                         </div>
+
+                        <h1>
+                            Hello,
+                            <span data-dashboard-user-name>
+                                ${escapeHTML(name)}
+                            </span>
+                        </h1>
+
+                        <p>
+                            Your personal dashboard
+                        </p>
 
                     </div>
 
 
                     <div class="dashboard-grid">
+
 
                         <!-- ACCOUNT -->
 
@@ -480,20 +261,38 @@ function createDashboard() {
 
                             <div class="dashboard-card-header">
 
-                                <div>
-                                    <div class="dashboard-card-label">
-                                        ACCOUNT
-                                    </div>
+                                <div
+                                    class="dashboard-card-label"
+                                >
+                                    ACCOUNT
                                 </div>
 
-                                <div class="dashboard-profile-avatar">
 
-                                    ${avatarHTML}
+                                <div
+                                    class="dashboard-profile-avatar"
+                                >
 
                                     ${
-                                        !persona.avatar
-                                            ? ''
-                                            : ''
+                                        avatar
+                                        ? `
+                                            <img
+                                                src="${escapeHTML(avatar)}"
+                                                data-dashboard-avatar
+                                                alt=""
+                                            >
+                                        `
+                                        : `
+                                            <div
+                                                class="dashboard-avatar-letter"
+                                                data-dashboard-avatar-letter
+                                            >
+                                                ${escapeHTML(
+                                                    name
+                                                        .charAt(0)
+                                                        .toUpperCase()
+                                                )}
+                                            </div>
+                                        `
                                     }
 
                                 </div>
@@ -501,24 +300,23 @@ function createDashboard() {
                             </div>
 
 
-                            <div class="dashboard-account-name">
-
-                                <strong
-                                    data-dashboard-user-name
-                                >
-                                    ${escapeHTML(persona.name)}
-                                </strong>
-
+                            <div
+                                class="dashboard-account-name"
+                                data-dashboard-user-name
+                            >
+                                ${escapeHTML(name)}
                             </div>
 
 
-                            <div class="dashboard-account-edit">
+                            <div
+                                class="dashboard-account-edit"
+                            >
 
                                 <textarea
                                     id="dashboard-bio"
-                                    class="dashboard-bio"
                                     placeholder="Write something about yourself..."
                                 ></textarea>
+
 
                                 <button
                                     type="button"
@@ -552,7 +350,7 @@ function createDashboard() {
                         </section>
 
 
-                        <!-- CALENDAR -->
+                        <!-- SCHEDULE -->
 
                         <section class="dashboard-card">
 
@@ -560,7 +358,7 @@ function createDashboard() {
                                 SCHEDULE
                             </div>
 
-                            <div class="dashboard-calendar-date">
+                            <div class="dashboard-calendar-number">
                                 ${new Date().getDate()}
                             </div>
 
@@ -615,7 +413,7 @@ function createDashboard() {
                         </section>
 
 
-                        <!-- QUICK NOTE -->
+                        <!-- NOTE -->
 
                         <section class="dashboard-card">
 
@@ -629,12 +427,13 @@ function createDashboard() {
 
                         </section>
 
+
                     </div>
 
                 </section>
 
 
-                <!-- ACCOUNT PAGE -->
+                <!-- ACCOUNT -->
 
                 <section
                     class="dashboard-page"
@@ -647,63 +446,67 @@ function createDashboard() {
                             PROFILE
                         </div>
 
-                        <h2>Account</h2>
+                        <h2>
+                            Account
+                        </h2>
 
                     </div>
 
 
                     <div class="dashboard-large-profile">
 
-                        <div class="dashboard-large-avatar">
+                        <div
+                            class="dashboard-large-avatar"
+                        >
 
                             ${
-                                persona.avatar
-                                    ? `
-                                        <img
-                                            src="${escapeHTML(persona.avatar)}"
-                                            alt=""
-                                            data-dashboard-large-avatar
-                                        >
-                                    `
-                                    : `
-                                        <div
-                                            class="dashboard-avatar-placeholder large"
-                                            data-dashboard-avatar-placeholder
-                                        >
-                                            ${escapeHTML(
-                                                persona.name
-                                                    .charAt(0)
-                                                    .toUpperCase()
-                                            )}
-                                        </div>
-                                    `
+                                avatar
+                                ? `
+                                    <img
+                                        src="${escapeHTML(avatar)}"
+                                        data-dashboard-large-avatar
+                                        alt=""
+                                    >
+                                `
+                                : `
+                                    <div
+                                        class="dashboard-avatar-letter large"
+                                    >
+                                        ${escapeHTML(
+                                            name
+                                                .charAt(0)
+                                                .toUpperCase()
+                                        )}
+                                    </div>
+                                `
                             }
 
                         </div>
 
 
-                        <div class="dashboard-large-profile-info">
+                        <div
+                            class="dashboard-large-profile-info"
+                        >
 
                             <div class="dashboard-card-label">
                                 ACCOUNT
                             </div>
 
-                            <h2
-                                data-dashboard-user-name
-                            >
-                                ${escapeHTML(persona.name)}
+                            <h2 data-dashboard-user-name>
+                                ${escapeHTML(name)}
                             </h2>
+
 
                             <textarea
                                 id="dashboard-bio-large"
-                                class="dashboard-bio"
                                 placeholder="Write something about yourself..."
                             ></textarea>
+
 
                             <button
                                 type="button"
                                 class="dashboard-save-button"
-                                data-dashboard-save-large
+                                id="dashboard-save-large"
                             >
                                 Save
                             </button>
@@ -715,113 +518,167 @@ function createDashboard() {
                 </section>
 
 
-                <!-- GENERIC PAGES -->
+                <!-- BANK -->
 
                 <section
                     class="dashboard-page"
                     data-dashboard-page="bank"
                 >
+
                     <div class="dashboard-page-heading">
+
                         <div class="dashboard-eyebrow">
                             FINANCE
                         </div>
-                        <h2>Bank</h2>
+
+                        <h2>
+                            Bank
+                        </h2>
+
                     </div>
 
                     <div class="dashboard-empty-card">
                         No bank data yet.
                     </div>
+
                 </section>
 
+
+                <!-- MESSAGES -->
 
                 <section
                     class="dashboard-page"
                     data-dashboard-page="messages"
                 >
+
                     <div class="dashboard-page-heading">
+
                         <div class="dashboard-eyebrow">
                             COMMUNICATION
                         </div>
-                        <h2>Messages</h2>
+
+                        <h2>
+                            Messages
+                        </h2>
+
                     </div>
 
                     <div class="dashboard-empty-card">
                         No messages yet.
                     </div>
+
                 </section>
 
+
+                <!-- SCHEDULE -->
 
                 <section
                     class="dashboard-page"
                     data-dashboard-page="schedule"
                 >
+
                     <div class="dashboard-page-heading">
+
                         <div class="dashboard-eyebrow">
                             CALENDAR
                         </div>
-                        <h2>Schedule</h2>
+
+                        <h2>
+                            Schedule
+                        </h2>
+
                     </div>
 
                     <div class="dashboard-empty-card">
                         No scheduled events.
                     </div>
+
                 </section>
 
+
+                <!-- NOTES -->
 
                 <section
                     class="dashboard-page"
                     data-dashboard-page="notes"
                 >
+
                     <div class="dashboard-page-heading">
+
                         <div class="dashboard-eyebrow">
                             PERSONAL
                         </div>
-                        <h2>Notes</h2>
+
+                        <h2>
+                            Notes
+                        </h2>
+
                     </div>
 
                     <div class="dashboard-empty-card">
                         No notes yet.
                     </div>
+
                 </section>
 
+
+                <!-- FILES -->
 
                 <section
                     class="dashboard-page"
                     data-dashboard-page="files"
                 >
+
                     <div class="dashboard-page-heading">
+
                         <div class="dashboard-eyebrow">
                             STORAGE
                         </div>
-                        <h2>Files</h2>
+
+                        <h2>
+                            Files
+                        </h2>
+
                     </div>
 
                     <div class="dashboard-empty-card">
                         No files yet.
                     </div>
+
                 </section>
 
+
+                <!-- SETTINGS -->
 
                 <section
                     class="dashboard-page"
                     data-dashboard-page="settings"
                 >
+
                     <div class="dashboard-page-heading">
+
                         <div class="dashboard-eyebrow">
                             SYSTEM
                         </div>
-                        <h2>Settings</h2>
+
+                        <h2>
+                            Settings
+                        </h2>
+
                     </div>
 
                     <div class="dashboard-empty-card">
                         Dashboard settings will appear here.
                     </div>
+
                 </section>
+
 
             </main>
 
 
             <footer class="dashboard-footer">
+
                 <span>
                     DASHBOARD
                 </span>
@@ -829,6 +686,7 @@ function createDashboard() {
                 <span>
                     PERSONAL SPACE
                 </span>
+
             </footer>
 
         </div>
@@ -855,14 +713,13 @@ function createDashboard() {
         1000
     );
 
-    setupPersonaSync();
 
     return dashboardOverlay;
 }
 
 
 /* =========================================================
-   DASHBOARD EVENTS
+   EVENTS
    ========================================================= */
 
 function setupDashboardEvents() {
@@ -870,219 +727,300 @@ function setupDashboardEvents() {
     if (!dashboardOverlay) return;
 
 
-    // Close
-    const closeButton =
-        dashboardOverlay.querySelector(
+    /* CLOSE */
+
+    dashboardOverlay
+        .querySelector(
             '[data-dashboard-close]'
+        )
+        ?.addEventListener(
+            'click',
+            closeDashboard
         );
 
-    closeButton?.addEventListener(
-        'click',
-        closeDashboard
-    );
 
+    /* PAGE SELECT */
 
-    // Navigation
-    const pageSelect =
-        dashboardOverlay.querySelector(
+    dashboardOverlay
+        .querySelector(
             '[data-dashboard-page-select]'
-        );
+        )
+        ?.addEventListener(
+            'change',
+            event => {
 
-    pageSelect?.addEventListener(
-        'change',
-        event => {
-            switchPage(
-                event.target.value
-            );
-        }
-    );
+                const page =
+                    event.target.value;
 
+                dashboardOverlay
+                    .querySelectorAll(
+                        '[data-dashboard-page]'
+                    )
+                    .forEach(section => {
 
-    // Save home bio
-    const saveBioButton =
-        dashboardOverlay.querySelector(
-            '#dashboard-save-bio'
-        );
+                        section.classList.toggle(
+                            'active',
+                            section.dataset.dashboardPage === page
+                        );
 
-    saveBioButton?.addEventListener(
-        'click',
-        () => {
+                    });
 
-            const textarea =
-                dashboardOverlay.querySelector(
-                    '#dashboard-bio'
-                );
-
-            if (!textarea) return;
-
-            saveBio(
-                textarea.value
-            );
-
-            showSavedState(
-                saveBioButton
-            );
-        }
-    );
-
-
-    // Save account bio
-    const saveLargeButton =
-        dashboardOverlay.querySelector(
-            '[data-dashboard-save-large]'
-        );
-
-    saveLargeButton?.addEventListener(
-        'click',
-        () => {
-
-            const textarea =
-                dashboardOverlay.querySelector(
-                    '#dashboard-bio-large'
-                );
-
-            if (!textarea) return;
-
-            saveBio(
-                textarea.value
-            );
-
-            const homeTextarea =
-                dashboardOverlay.querySelector(
-                    '#dashboard-bio'
-                );
-
-            if (homeTextarea) {
-                homeTextarea.value =
-                    textarea.value;
             }
-
-            showSavedState(
-                saveLargeButton
-            );
-        }
-    );
+        );
 
 
-    // Sync the two bio fields
-    const homeBio =
+    /* SAVE BIO */
+
+    dashboardOverlay
+        .querySelector(
+            '#dashboard-save-bio'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+
+                const textarea =
+                    dashboardOverlay.querySelector(
+                        '#dashboard-bio'
+                    );
+
+                if (!textarea) return;
+
+                saveBio(
+                    textarea.value
+                );
+
+                showSaved(
+                    '#dashboard-save-bio'
+                );
+
+            }
+        );
+
+
+    /* SAVE LARGE BIO */
+
+    dashboardOverlay
+        .querySelector(
+            '#dashboard-save-large'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+
+                const textarea =
+                    dashboardOverlay.querySelector(
+                        '#dashboard-bio-large'
+                    );
+
+                if (!textarea) return;
+
+                saveBio(
+                    textarea.value
+                );
+
+                const small =
+                    dashboardOverlay.querySelector(
+                        '#dashboard-bio'
+                    );
+
+                if (small) {
+                    small.value =
+                        textarea.value;
+                }
+
+                showSaved(
+                    '#dashboard-save-large'
+                );
+
+            }
+        );
+
+
+    /* SYNC BIO FIELDS */
+
+    const small =
         dashboardOverlay.querySelector(
             '#dashboard-bio'
         );
 
-    const largeBio =
+    const large =
         dashboardOverlay.querySelector(
             '#dashboard-bio-large'
         );
 
-    homeBio?.addEventListener(
+
+    small?.addEventListener(
         'input',
         () => {
-            if (largeBio) {
-                largeBio.value =
-                    homeBio.value;
+
+            if (large) {
+                large.value =
+                    small.value;
             }
+
         }
     );
 
-    largeBio?.addEventListener(
+
+    large?.addEventListener(
         'input',
         () => {
-            if (homeBio) {
-                homeBio.value =
-                    largeBio.value;
+
+            if (small) {
+                small.value =
+                    large.value;
             }
+
         }
     );
+
 }
 
 
 /* =========================================================
-   PAGE SWITCH
+   BIO STORAGE
    ========================================================= */
 
-function switchPage(pageName) {
+function saveBio(value) {
 
-    if (!dashboardOverlay) return;
+    try {
 
-    dashboardOverlay
-        .querySelectorAll(
-            '[data-dashboard-page]'
-        )
-        .forEach(page => {
+        localStorage.setItem(
+            'dashboard_persona_bio',
+            value
+        );
 
-            page.classList.toggle(
-                'active',
-                page.dataset.dashboardPage === pageName
-            );
+    } catch (e) {}
 
-        });
 }
 
-
-/* =========================================================
-   BIO LOAD
-   ========================================================= */
 
 function loadBio() {
 
     if (!dashboardOverlay) return;
 
-    const bio = getBio();
+    let value = '';
 
-    const homeBio =
+    try {
+
+        value =
+            localStorage.getItem(
+                'dashboard_persona_bio'
+            ) || '';
+
+    } catch (e) {}
+
+
+    const small =
         dashboardOverlay.querySelector(
             '#dashboard-bio'
         );
 
-    const largeBio =
+    const large =
         dashboardOverlay.querySelector(
             '#dashboard-bio-large'
         );
 
-    if (homeBio) {
-        homeBio.value = bio;
+
+    if (small) {
+        small.value = value;
     }
 
-    if (largeBio) {
-        largeBio.value = bio;
+    if (large) {
+        large.value = value;
     }
+
 }
 
 
 /* =========================================================
-   SAVED STATE
+   SAVED MESSAGE
    ========================================================= */
 
-function showSavedState(button) {
+function showSaved(selector) {
+
+    const button =
+        dashboardOverlay?.querySelector(
+            selector
+        );
 
     if (!button) return;
 
-    const original =
+    const old =
         button.textContent;
 
     button.textContent =
         'Saved ✓';
 
-    button.classList.add(
-        'saved'
+    setTimeout(
+        () => {
+            button.textContent =
+                old;
+        },
+        1200
     );
 
-    setTimeout(() => {
-
-        button.textContent =
-            original;
-
-        button.classList.remove(
-            'saved'
-        );
-
-    }, 1200);
 }
 
 
 /* =========================================================
-   OPEN / CLOSE
+   CLOCK
+   ========================================================= */
+
+function updateClock() {
+
+    if (!dashboardOverlay) return;
+
+    const now =
+        new Date();
+
+
+    const clock =
+        dashboardOverlay.querySelector(
+            '[data-dashboard-clock]'
+        );
+
+    const date =
+        dashboardOverlay.querySelector(
+            '[data-dashboard-date]'
+        );
+
+
+    if (clock) {
+
+        clock.textContent =
+            now.toLocaleTimeString(
+                'th-TH',
+                {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }
+            );
+
+    }
+
+
+    if (date) {
+
+        date.textContent =
+            now.toLocaleDateString(
+                'th-TH',
+                {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                }
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   OPEN
    ========================================================= */
 
 async function openDashboard() {
@@ -1091,26 +1029,56 @@ async function openDashboard() {
         createDashboard();
     }
 
-    if (!dashboardOverlay) return;
+    if (!dashboardOverlay) {
+        return;
+    }
+
 
     dashboardOverlay.classList.add(
         'is-open'
     );
 
-    syncPersona();
+
+    /* Update user every time dashboard opens */
+
+    const name =
+        getUserName();
+
+    dashboardOverlay
+        .querySelectorAll(
+            '[data-dashboard-user-name]'
+        )
+        .forEach(el => {
+
+            el.textContent =
+                name;
+
+        });
+
+
+    /* Fullscreen */
 
     try {
+
         if (
             !document.fullscreenElement &&
             document.documentElement.requestFullscreen
         ) {
-            await document.documentElement.requestFullscreen();
+
+            await document
+                .documentElement
+                .requestFullscreen();
+
         }
-    } catch (error) {
-        // Fullscreen may be blocked on some mobile browsers.
-    }
+
+    } catch (e) {}
+
 }
 
+
+/* =========================================================
+   CLOSE
+   ========================================================= */
 
 async function closeDashboard() {
 
@@ -1120,31 +1088,38 @@ async function closeDashboard() {
         'is-open'
     );
 
+
     try {
+
         if (
             document.fullscreenElement &&
             document.exitFullscreen
         ) {
+
             await document.exitFullscreen();
+
         }
-    } catch (error) {
-        // Ignore fullscreen errors.
-    }
+
+    } catch (e) {}
+
 }
 
 
 /* =========================================================
-   SILLYTAVERN MENU
+   MENU ITEM
    ========================================================= */
 
 function createMenuItem() {
 
-    const optionsMenu =
-        document.querySelector('#options');
+    const options =
+        document.querySelector(
+            '#options'
+        );
 
-    if (!optionsMenu) {
+    if (!options) {
         return false;
     }
+
 
     if (
         document.querySelector(
@@ -1158,21 +1133,26 @@ function createMenuItem() {
     const item =
         document.createElement('div');
 
+
     item.id =
         'dashboard-menu-item';
 
+
     item.className =
         'list-group-item flex-container flexGap5';
+
 
     item.setAttribute(
         'role',
         'button'
     );
 
+
     item.setAttribute(
         'tabindex',
         '0'
     );
+
 
     item.innerHTML = `
         <i class="fa-solid fa-table-columns"></i>
@@ -1180,20 +1160,18 @@ function createMenuItem() {
     `;
 
 
-    const open = event => {
-
-        event?.preventDefault();
-        event?.stopPropagation();
-
-        openDashboard();
-
-    };
-
-
     item.addEventListener(
         'click',
-        open
+        event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            openDashboard();
+
+        }
     );
+
 
     item.addEventListener(
         'keydown',
@@ -1203,21 +1181,25 @@ function createMenuItem() {
                 event.key === 'Enter' ||
                 event.key === ' '
             ) {
-                open(event);
+
+                event.preventDefault();
+
+                openDashboard();
+
             }
 
         }
     );
 
 
-    optionsMenu.prepend(item);
+    options.prepend(item);
 
     return true;
 }
 
 
 /* =========================================================
-   INITIALIZATION
+   WAIT FOR ST
    ========================================================= */
 
 function waitForOptions() {
@@ -1228,12 +1210,18 @@ function waitForOptions() {
         return;
     }
 
+
     setTimeout(
         waitForOptions,
         500
     );
+
 }
 
+
+/* =========================================================
+   INIT
+   ========================================================= */
 
 function init() {
 
@@ -1244,18 +1232,17 @@ function init() {
     initialized = true;
 
     console.log(
-        `[${MODULE_NAME}] Loading...`
+        '[Dashboard] Initializing'
     );
 
-    /*
-     * ไม่สร้าง UI จนกว่า options menu
-     * ของ SillyTavern จะพร้อม
-     */
+
     waitForOptions();
 
+
     console.log(
-        `[${MODULE_NAME}] Loaded successfully`
+        '[Dashboard] Loaded'
     );
+
 }
 
 
