@@ -1,41 +1,40 @@
 function init() {
-
     console.log('[Magic System UI] Initializing...');
 
-    // ป้องกันการสร้างเมนูซ้ำ
+    // ป้องกันการสร้างซ้ำ
     if (document.getElementById('magic-system-menu')) {
         return;
     }
 
-    // รอให้ Chat Options ของ SillyTavern โหลดก่อน
-    const waitForMenu = setInterval(() => {
-
-        const optionsMenu = document.querySelector('#options .options-content');
+    // รอให้เมนู Options ของ SillyTavern พร้อม
+    const waitForOptions = setInterval(() => {
+        const optionsMenu = document.querySelector('#options');
 
         if (!optionsMenu) {
             return;
         }
 
-        clearInterval(waitForMenu);
+        clearInterval(waitForOptions);
 
         // ==============================
-        // MAGIC SYSTEM MENU ITEM
+        // MAGIC SYSTEM MENU
         // ==============================
 
-        const menuItem = document.createElement('a');
+        const menuItem = document.createElement('div');
 
         menuItem.id = 'magic-system-menu';
+        menuItem.className = 'list-group-item flex-container flexGap5';
 
         menuItem.innerHTML = `
-            <i class="fa-lg fa-solid fa-wand-magic-sparkles"></i>
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
             <span>Magic System</span>
         `;
 
-        // ใส่ไว้ด้านบนของเมนู
         optionsMenu.prepend(menuItem);
 
+
         // ==============================
-        // SYSTEM WINDOW
+        // SYSTEM OVERLAY
         // ==============================
 
         const overlay = document.createElement('div');
@@ -43,9 +42,9 @@ function init() {
         overlay.id = 'magic-system-overlay';
 
         overlay.innerHTML = `
-
             <div class="magic-system-window">
 
+                <!-- HEADER -->
                 <div class="magic-system-header">
 
                     <div>
@@ -68,6 +67,7 @@ function init() {
                 </div>
 
 
+                <!-- TABS -->
                 <div class="system-tabs">
 
                     <button class="system-tab active">
@@ -93,9 +93,11 @@ function init() {
                 </div>
 
 
+                <!-- CONTENT -->
                 <div class="system-content">
 
-                    <div class="system-section">
+                    <!-- PLAYER STATUS -->
+                    <section class="system-section">
 
                         <div class="section-title">
                             PLAYER STATUS
@@ -112,7 +114,9 @@ function init() {
                                 <span>HP</span>
 
                                 <div class="status-bar">
-                                    <div class="status-fill hp"></div>
+                                    <div
+                                        class="status-fill hp"
+                                    ></div>
                                 </div>
 
                                 <span>100 / 100</span>
@@ -125,7 +129,9 @@ function init() {
                                 <span>MP</span>
 
                                 <div class="status-bar">
-                                    <div class="status-fill mp"></div>
+                                    <div
+                                        class="status-fill mp"
+                                    ></div>
                                 </div>
 
                                 <span>80 / 100</span>
@@ -138,7 +144,9 @@ function init() {
                                 <span>EXP</span>
 
                                 <div class="status-bar">
-                                    <div class="status-fill exp"></div>
+                                    <div
+                                        class="status-fill exp"
+                                    ></div>
                                 </div>
 
                                 <span>65%</span>
@@ -147,10 +155,11 @@ function init() {
 
                         </div>
 
-                    </div>
+                    </section>
 
 
-                    <div class="system-section">
+                    <!-- ATTRIBUTES -->
+                    <section class="system-section">
 
                         <div class="section-title">
                             ATTRIBUTES
@@ -184,10 +193,11 @@ function init() {
 
                         </div>
 
-                    </div>
+                    </section>
 
 
-                    <div class="system-section">
+                    <!-- SYSTEM RECORD -->
+                    <section class="system-section">
 
                         <div class="section-title">
                             SYSTEM RECORD
@@ -208,11 +218,12 @@ function init() {
                             <strong>ONLINE</strong>
                         </div>
 
-                    </div>
+                    </section>
 
                 </div>
 
 
+                <!-- FOOTER -->
                 <div class="system-footer">
 
                     <span>
@@ -232,47 +243,80 @@ function init() {
 
 
         // ==============================
-        // OPEN SYSTEM
+        // OPEN
         // ==============================
 
-        menuItem.addEventListener('click', (event) => {
-
-            event.preventDefault();
+        menuItem.addEventListener('click', async () => {
 
             overlay.classList.add('open');
 
-        });
-
-
-        // ==============================
-        // CLOSE SYSTEM
-        // ==============================
-
-        const closeButton =
-            document.getElementById('magic-system-close');
-
-        closeButton.addEventListener('click', () => {
-
-            overlay.classList.remove('open');
-
-        });
-
-
-        // คลิกพื้นที่มืดด้านนอกเพื่อปิด
-        overlay.addEventListener('click', (event) => {
-
-            if (event.target === overlay) {
-
-                overlay.classList.remove('open');
-
+            // พยายามเข้า Fullscreen
+            try {
+                if (!document.fullscreenElement) {
+                    await document.documentElement.requestFullscreen();
+                }
+            } catch (error) {
+                console.log(
+                    '[Magic System UI] Fullscreen unavailable',
+                    error
+                );
             }
 
         });
 
 
-        console.log('[Magic System UI] Ready.');
+        // ==============================
+        // CLOSE
+        // ==============================
 
+        const closeButton =
+            overlay.querySelector('#magic-system-close');
+
+        closeButton.addEventListener(
+            'click',
+            async () => {
+
+                overlay.classList.remove('open');
+
+                try {
+                    if (document.fullscreenElement) {
+                        await document.exitFullscreen();
+                    }
+                } catch (error) {
+                    console.log(
+                        '[Magic System UI] Exit fullscreen',
+                        error
+                    );
+                }
+
+            }
+        );
+
+
+        // ==============================
+        // ESC / FULLSCREEN CHANGE
+        // ==============================
+
+        document.addEventListener(
+            'fullscreenchange',
+            () => {
+
+                if (!document.fullscreenElement) {
+                    overlay.classList.remove('open');
+                }
+
+            }
+        );
+
+
+        console.log(
+            '[Magic System UI] Ready.'
+        );
     }, 500);
 }
 
-export { init };
+
+// SillyTavern Extension entry point
+export {
+    init
+};
