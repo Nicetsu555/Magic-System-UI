@@ -5,5 +5,8 @@
   "css": "style.css",
   "author": "เอส",
   "version": "1.0.0",
-  "homePage": "https://github.com/Nicetsu555/Magic-System-UI-test"
+  "homePage": "https://github.com/Nicetsu555/Magic-System-UI-test",
+  "hooks": {
+    "activate": "init"
+  }
 }
