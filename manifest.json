@@ -1,0 +1,9 @@
+{
+  "display_name": "Magic System UI",
+  "loading_order": 10,
+  "js": "index.js",
+  "css": "style.css",
+  "author": "เอส",
+  "version": "1.0.0",
+  "homePage": "https://github.com/Nicetsu555/Magic-System-UI"
+}
