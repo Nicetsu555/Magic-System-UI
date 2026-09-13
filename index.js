@@ -1,82 +1,184 @@
-function init() {
+/* =========================================================
+   DASHBOARD
+   Modern Personal Dashboard for SillyTavern
+   ========================================================= */
 
-    console.log('[Dashboard] Initializing...');
+const DASHBOARD_ID = 'st-dashboard-overlay';
+const DASHBOARD_MENU_ID = 'st-dashboard-menu-item';
 
-    // Prevent duplicate initialization
-    if (document.getElementById('dashboard-menu-item')) {
-        return;
-    }
+let dashboardInitialized = false;
+let dashboardClockTimer = null;
 
-    // =====================================================
-    // WAIT FOR SILLYTAVERN CHAT OPTIONS
-    // =====================================================
 
-    const waitForOptions = setInterval(() => {
+/* =========================================================
+   INIT
+   ========================================================= */
 
-        const optionsMenu = document.querySelector('#options');
+export async function init() {
+    if (dashboardInitialized) return;
 
-        if (!optionsMenu) {
-            return;
-        }
+    dashboardInitialized = true;
 
-        clearInterval(waitForOptions);
+    await waitForSillyTavern();
 
-        createDashboard(optionsMenu);
-
-    }, 500);
+    addDashboardMenu();
+    createDashboard();
 }
 
 
-// =========================================================
-// CREATE DASHBOARD
-// =========================================================
+/* =========================================================
+   WAIT FOR SILLYTAVERN
+   ========================================================= */
 
-function createDashboard(optionsMenu) {
+function waitForSillyTavern() {
+    return new Promise((resolve) => {
 
-    // =====================================================
-    // MENU ITEM
-    // =====================================================
+        if (document.querySelector('#options')) {
+            resolve();
+            return;
+        }
+
+        const observer = new MutationObserver(() => {
+
+            if (document.querySelector('#options')) {
+                observer.disconnect();
+                resolve();
+            }
+
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+    });
+}
+
+
+/* =========================================================
+   ADD DASHBOARD TO CHAT OPTIONS
+   ========================================================= */
+
+function addDashboardMenu() {
+
+    if (document.querySelector(`#${DASHBOARD_MENU_ID}`)) {
+        return;
+    }
+
+    const options =
+        document.querySelector('#options');
+
+    if (!options) return;
+
 
     const menuItem = document.createElement('div');
 
-    menuItem.id = 'dashboard-menu-item';
+    menuItem.id = DASHBOARD_MENU_ID;
 
     menuItem.className =
         'list-group-item flex-container flexGap5';
+
 
     menuItem.innerHTML = `
         <i class="fa-solid fa-chart-pie"></i>
         <span>Dashboard</span>
     `;
 
-    optionsMenu.prepend(menuItem);
+
+    menuItem.addEventListener('click', async (event) => {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        closeChatOptions();
+
+        await openDashboard();
+
+    });
 
 
-    // =====================================================
-    // DASHBOARD OVERLAY
-    // =====================================================
+    /*
+     * ใส่ Dashboard ไว้บนสุด
+     */
 
-    const dashboard = document.createElement('div');
+    const content =
+        options.querySelector('.options-content');
 
-    dashboard.id = 'dashboard-overlay';
+    if (content) {
+        content.prepend(menuItem);
+    } else {
+        options.prepend(menuItem);
+    }
+}
 
-    dashboard.innerHTML = `
+
+/* =========================================================
+   CLOSE SILLYTAVERN CHAT OPTIONS
+   ========================================================= */
+
+function closeChatOptions() {
+
+    const options =
+        document.querySelector('#options');
+
+    if (!options) return;
+
+    options.classList.remove('open');
+
+    /*
+     * พยายามกดปุ่ม options ของ ST
+     */
+
+    const button =
+        document.querySelector('#options_button');
+
+    if (button) {
+
+        try {
+            button.click();
+        } catch (error) {
+            // ignore
+        }
+
+    }
+}
+
+
+/* =========================================================
+   CREATE DASHBOARD
+   ========================================================= */
+
+function createDashboard() {
+
+    if (document.querySelector(`#${DASHBOARD_ID}`)) {
+        return;
+    }
+
+
+    const overlay =
+        document.createElement('div');
+
+    overlay.id = DASHBOARD_ID;
+
+
+    overlay.innerHTML = `
 
         <div class="dashboard-app">
 
             <!-- =========================================
-                 TOP BAR
-                 ========================================= -->
+                 HEADER
+            ========================================== -->
 
-            <header class="dashboard-topbar">
+            <header class="dashboard-header">
 
                 <div class="dashboard-brand">
 
-                    <div class="dashboard-logo">
-                        ✦
+                    <div class="dashboard-brand-icon">
+                        <i class="fa-solid fa-sparkles"></i>
                     </div>
 
-                    <div>
+                    <div class="dashboard-brand-text">
 
                         <div class="dashboard-title">
                             DASHBOARD
@@ -91,197 +193,102 @@ function createDashboard(optionsMenu) {
                 </div>
 
 
-                <!-- PAGE SELECT -->
+                <!-- SELECT NAVIGATION -->
 
-                <div class="dashboard-selector">
+                <div class="dashboard-navigation">
 
-                    <button
-                        id="dashboard-selector-button"
-                        class="dashboard-selector-button"
-                        type="button"
-                    >
+                    <div class="dashboard-nav-icon">
+                        <i class="fa-solid fa-house"></i>
+                    </div>
 
-                        <span
-                            id="dashboard-current-icon"
-                            class="dashboard-current-icon"
-                        >
-                            <i class="fa-solid fa-house"></i>
-                        </span>
+                    <div class="dashboard-select-wrap">
 
-                        <span>
+                        <div class="dashboard-select-main">
 
-                            <strong id="dashboard-current-title">
+                            <span
+                                id="dashboard-current-title"
+                            >
                                 หน้าหลัก
-                            </strong>
+                            </span>
 
-                            <small id="dashboard-current-subtitle">
+                            <span
+                                id="dashboard-current-subtitle"
+                            >
                                 Home
-                            </small>
+                            </span>
 
-                        </span>
+                        </div>
 
-                        <i class="fa-solid fa-chevron-down"></i>
-
-                    </button>
-
-
-                    <div
-                        id="dashboard-selector-menu"
-                        class="dashboard-selector-menu"
-                    >
-
-                        <button
-                            data-page="home"
-                            data-title="หน้าหลัก"
-                            data-subtitle="Home"
-                            data-icon="fa-house"
-                            class="dashboard-select-item active"
+                        <select
+                            id="dashboard-page-select"
+                            aria-label="Dashboard navigation"
                         >
-                            <i class="fa-solid fa-house"></i>
-                            <span>
+
+                            <option value="home">
                                 หน้าหลัก
-                                <small>Home</small>
-                            </span>
-                        </button>
+                            </option>
 
+                            <option value="account">
+                                บัญชี
+                            </option>
 
-                        <button
-                            data-page="account"
-                            data-title="ข้อมูลผู้ใช้"
-                            data-subtitle="Account"
-                            data-icon="fa-user"
-                            class="dashboard-select-item"
-                        >
-                            <i class="fa-solid fa-user"></i>
-                            <span>
-                                ข้อมูลผู้ใช้
-                                <small>Account</small>
-                            </span>
-                        </button>
-
-
-                        <button
-                            data-page="bank"
-                            data-title="ธนาคาร"
-                            data-subtitle="Bank"
-                            data-icon="fa-wallet"
-                            class="dashboard-select-item"
-                        >
-                            <i class="fa-solid fa-wallet"></i>
-                            <span>
+                            <option value="bank">
                                 ธนาคาร
-                                <small>Bank</small>
-                            </span>
-                        </button>
+                            </option>
 
-
-                        <button
-                            data-page="messages"
-                            data-title="ข้อความ"
-                            data-subtitle="Messages"
-                            data-icon="fa-message"
-                            class="dashboard-select-item"
-                        >
-                            <i class="fa-solid fa-message"></i>
-                            <span>
+                            <option value="messages">
                                 ข้อความ
-                                <small>Messages</small>
-                            </span>
-                        </button>
+                            </option>
 
+                            <option value="schedule">
+                                ตารางเวลา
+                            </option>
 
-                        <button
-                            data-page="schedule"
-                            data-title="ตารางงาน"
-                            data-subtitle="Schedule"
-                            data-icon="fa-calendar"
-                            class="dashboard-select-item"
-                        >
-                            <i class="fa-solid fa-calendar"></i>
-                            <span>
-                                ตารางงาน
-                                <small>Schedule</small>
-                            </span>
-                        </button>
+                            <option value="notes">
+                                โน้ต
+                            </option>
 
+                            <option value="files">
+                                ไฟล์
+                            </option>
 
-                        <button
-                            data-page="notes"
-                            data-title="บันทึก"
-                            data-subtitle="Notes"
-                            data-icon="fa-note-sticky"
-                            class="dashboard-select-item"
-                        >
-                            <i class="fa-solid fa-note-sticky"></i>
-                            <span>
-                                บันทึก
-                                <small>Notes</small>
-                            </span>
-                        </button>
-
-
-                        <button
-                            data-page="files"
-                            data-title="ไฟล์ส่วนตัว"
-                            data-subtitle="Files"
-                            data-icon="fa-folder"
-                            class="dashboard-select-item"
-                        >
-                            <i class="fa-solid fa-folder"></i>
-                            <span>
-                                ไฟล์ส่วนตัว
-                                <small>Files</small>
-                            </span>
-                        </button>
-
-
-                        <button
-                            data-page="settings"
-                            data-title="ตั้งค่า"
-                            data-subtitle="Settings"
-                            data-icon="fa-gear"
-                            class="dashboard-select-item"
-                        >
-                            <i class="fa-solid fa-gear"></i>
-                            <span>
+                            <option value="settings">
                                 ตั้งค่า
-                                <small>Settings</small>
-                            </span>
-                        </button>
+                            </option>
+
+                        </select>
+
+                        <i class="fa-solid fa-chevron-down dashboard-select-arrow"></i>
 
                     </div>
 
                 </div>
 
 
-                <!-- RIGHT SIDE -->
+                <!-- HEADER ACTIONS -->
 
-                <div class="dashboard-top-actions">
+                <div class="dashboard-header-actions">
 
                     <button
-                        class="dashboard-icon-button"
+                        class="dashboard-icon-button notification-button"
                         title="Notifications"
                     >
+
                         <i class="fa-solid fa-bell"></i>
+
                         <span class="notification-dot"></span>
+
                     </button>
 
-                    <div class="dashboard-time">
-                        <small id="dashboard-date">
-                            14 Sep 2026
-                        </small>
-
-                        <strong id="dashboard-clock">
-                            03:07
-                        </strong>
-                    </div>
 
                     <button
                         id="dashboard-close"
-                        class="dashboard-close"
-                        type="button"
+                        class="dashboard-icon-button"
+                        title="Close"
                     >
-                        ×
+
+                        <i class="fa-solid fa-xmark"></i>
+
                     </button>
 
                 </div>
@@ -290,1054 +297,219 @@ function createDashboard(optionsMenu) {
 
 
             <!-- =========================================
-                 PAGE AREA
-                 ========================================= -->
+                 CONTENT
+            ========================================== -->
 
             <main
-                id="dashboard-pages"
-                class="dashboard-pages"
-            >
+                id="dashboard-content"
+                class="dashboard-content"
+            ></main>
 
-
-                <!-- =====================================
-                     HOME
-                     ===================================== -->
-
-                <section
-                    class="dashboard-page active"
-                    data-page-content="home"
-                >
-
-                    <div class="dashboard-welcome">
-
-                        <div>
-
-                            <span>
-                                Good morning,
-                            </span>
-
-                            <h1>
-                                Player
-                            </h1>
-
-                            <p>
-                                ขอให้วันนี้เป็นวันที่ดีนะ
-                            </p>
-
-                        </div>
-
-                        <div class="dashboard-sparkle">
-                            ✦
-                        </div>
-
-                    </div>
-
-
-                    <div class="dashboard-grid home-grid">
-
-                        <!-- ACCOUNT CARD -->
-
-                        <div class="dashboard-card account-card">
-
-                            <div class="card-header">
-
-                                <div>
-                                    <span class="card-label">
-                                        ACCOUNT
-                                    </span>
-
-                                    <h2>
-                                        ข้อมูลผู้ใช้
-                                    </h2>
-                                </div>
-
-                                <button class="card-more">
-                                    <i class="fa-solid fa-ellipsis"></i>
-                                </button>
-
-                            </div>
-
-
-                            <div class="account-main">
-
-                                <div class="profile-avatar">
-
-                                    <div class="avatar-placeholder">
-                                        P
-                                    </div>
-
-                                    <span class="online-dot"></span>
-
-                                </div>
-
-
-                                <div class="account-info">
-
-                                    <h2>
-                                        Player
-                                    </h2>
-
-                                    <p>
-                                        #0001-9987
-                                    </p>
-
-                                    <span>
-                                        ● ออนไลน์
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="account-quote">
-                                “ใช้ชีวิตในแบบที่ต้องการ”
-                                <small>
-                                    Live the life you want.
-                                </small>
-                            </div>
-
-                        </div>
-
-
-                        <!-- BANK CARD -->
-
-                        <div class="dashboard-card bank-card">
-
-                            <div class="card-header">
-
-                                <div>
-                                    <span class="card-label">
-                                        BANK
-                                    </span>
-
-                                    <h2>
-                                        บัญชีหลัก
-                                    </h2>
-                                </div>
-
-                                <i class="fa-solid fa-building-columns card-icon"></i>
-
-                            </div>
-
-
-                            <div class="bank-balance">
-
-                                <small>
-                                    ยอดเงินคงเหลือ
-                                </small>
-
-                                <strong>
-                                    ฿ 12,450.00
-                                </strong>
-
-                                <span>
-                                    •••• •••• •••• 9987
-                                </span>
-
-                            </div>
-
-
-                            <div class="bank-actions">
-
-                                <button>
-                                    <i class="fa-solid fa-arrow-up"></i>
-                                    <span>โอนเงิน</span>
-                                </button>
-
-                                <button>
-                                    <i class="fa-solid fa-arrow-down"></i>
-                                    <span>รับเงิน</span>
-                                </button>
-
-                                <button>
-                                    <i class="fa-solid fa-receipt"></i>
-                                    <span>ประวัติ</span>
-                                </button>
-
-                                <button>
-                                    <i class="fa-solid fa-credit-card"></i>
-                                    <span>บัตร</span>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- CALENDAR -->
-
-                        <div class="dashboard-card calendar-card">
-
-                            <div class="card-header">
-
-                                <h2>
-                                    กันยายน 2026
-                                </h2>
-
-                                <div class="calendar-arrows">
-                                    ‹ &nbsp; ›
-                                </div>
-
-                            </div>
-
-
-                            <div class="calendar-week">
-
-                                <span>อา.</span>
-                                <span>จ.</span>
-                                <span>อ.</span>
-                                <span>พ.</span>
-                                <span>พฤ.</span>
-                                <span>ศ.</span>
-                                <span>ส.</span>
-
-                            </div>
-
-
-                            <div class="calendar-days">
-
-                                ${generateCalendar()}
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- MESSAGES -->
-
-                        <div class="dashboard-card messages-card">
-
-                            <div class="card-header">
-
-                                <div>
-
-                                    <span class="card-label">
-                                        MESSAGES
-                                    </span>
-
-                                    <h2>
-                                        ข้อความล่าสุด
-                                    </h2>
-
-                                </div>
-
-                                <span class="view-all">
-                                    ดูทั้งหมด ›
-                                </span>
-
-                            </div>
-
-
-                            <div class="message-list">
-
-                                <div class="message-item">
-
-                                    <div class="message-avatar">
-                                        C
-                                    </div>
-
-                                    <div class="message-text">
-
-                                        <strong>
-                                            เชส
-                                        </strong>
-
-                                        <span>
-                                            แล้วพรุ่งนี้เจอกันนะ :)
-                                        </span>
-
-                                    </div>
-
-                                    <time>
-                                        02:12
-                                    </time>
-
-                                </div>
-
-
-                                <div class="message-item">
-
-                                    <div class="message-avatar">
-                                        T
-                                    </div>
-
-                                    <div class="message-text">
-
-                                        <strong>
-                                            พี่เตชิน
-                                        </strong>
-
-                                        <span>
-                                            อย่าลืมกินข้าวด้วย
-                                        </span>
-
-                                    </div>
-
-                                    <time>
-                                        00:48
-                                    </time>
-
-                                </div>
-
-
-                                <div class="message-item">
-
-                                    <div class="message-avatar system-avatar">
-                                        ⚙
-                                    </div>
-
-                                    <div class="message-text">
-
-                                        <strong>
-                                            ระบบ
-                                        </strong>
-
-                                        <span>
-                                            อัปเดตข้อมูลเรียบร้อยแล้ว
-                                        </span>
-
-                                    </div>
-
-                                    <time>
-                                        เมื่อวาน
-                                    </time>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- TASKS -->
-
-                        <div class="dashboard-card tasks-card">
-
-                            <div class="card-header">
-
-                                <div>
-
-                                    <span class="card-label">
-                                        TASKS
-                                    </span>
-
-                                    <h2>
-                                        ภารกิจวันนี้
-                                    </h2>
-
-                                </div>
-
-                                <span class="task-progress">
-                                    2 / 5
-                                </span>
-
-                            </div>
-
-
-                            <div class="task-progress-bar">
-
-                                <div></div>
-
-                            </div>
-
-
-                            <div class="task-list">
-
-                                <label class="task-item done">
-
-                                    <input
-                                        type="checkbox"
-                                        checked
-                                    >
-
-                                    <span>
-                                        ตรวจสอบยอดเงินบัญชี
-                                    </span>
-
-                                </label>
-
-
-                                <label class="task-item done">
-
-                                    <input
-                                        type="checkbox"
-                                        checked
-                                    >
-
-                                    <span>
-                                        ส่งรายงานโปรเจกต์
-                                    </span>
-
-                                </label>
-
-
-                                <label class="task-item">
-
-                                    <input
-                                        type="checkbox"
-                                    >
-
-                                    <span>
-                                        ตอบข้อความที่ค้าง
-                                    </span>
-
-                                </label>
-
-
-                                <label class="task-item">
-
-                                    <input
-                                        type="checkbox"
-                                    >
-
-                                    <span>
-                                        อ่านเอกสารสำหรับพรุ่งนี้
-                                    </span>
-
-                                </label>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- NOTES -->
-
-                        <div class="dashboard-card notes-card">
-
-                            <div class="card-header">
-
-                                <div>
-
-                                    <span class="card-label">
-                                        QUICK NOTE
-                                    </span>
-
-                                    <h2>
-                                        บันทึกสั้น ๆ
-                                    </h2>
-
-                                </div>
-
-                                <button class="add-note">
-                                    +
-                                </button>
-
-                            </div>
-
-
-                            <div class="note-content">
-
-                                “อย่าลืมว่า...
-
-                                <br>
-
-                                คุณเก่งมากแล้วในแบบของคุณ” ✨
-
-                            </div>
-
-                        </div>
-
-
-                    </div>
-
-                </section>
-
-
-                <!-- =====================================
-                     GENERIC PAGES
-                     ===================================== -->
-
-                <section
-                    class="dashboard-page"
-                    data-page-content="account"
-                >
-
-                    <div class="page-heading">
-
-                        <span>
-                            ACCOUNT
-                        </span>
-
-                        <h1>
-                            ข้อมูลผู้ใช้
-                        </h1>
-
-                        <p>
-                            จัดการข้อมูลและรายละเอียดของบัญชี
-                        </p>
-
-                    </div>
-
-
-                    <div class="large-info-card">
-
-                        <div class="large-avatar">
-                            P
-                        </div>
-
-                        <div>
-
-                            <h2>
-                                Player
-                            </h2>
-
-                            <p>
-                                #0001-9987
-                            </p>
-
-                            <span class="status-badge">
-                                ● ออนไลน์
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <section
-                    class="dashboard-page"
-                    data-page-content="bank"
-                >
-
-                    <div class="page-heading">
-
-                        <span>
-                            BANK
-                        </span>
-
-                        <h1>
-                            ธนาคาร
-                        </h1>
-
-                        <p>
-                            บัญชีและรายการทางการเงิน
-                        </p>
-
-                    </div>
-
-
-                    <div class="large-bank-card">
-
-                        <small>
-                            ยอดเงินคงเหลือ
-                        </small>
-
-                        <strong>
-                            ฿ 12,450.00
-                        </strong>
-
-                        <span>
-                            •••• •••• •••• 9987
-                        </span>
-
-                    </div>
-
-                </section>
-
-
-                <section
-                    class="dashboard-page"
-                    data-page-content="messages"
-                >
-
-                    <div class="page-heading">
-
-                        <span>
-                            MESSAGES
-                        </span>
-
-                        <h1>
-                            ข้อความ
-                        </h1>
-
-                        <p>
-                            ข้อความล่าสุดและการสนทนา
-                        </p>
-
-                    </div>
-
-
-                    <div class="full-list-card">
-
-                        <div class="full-message">
-                            <b>เชส</b>
-                            <span>แล้วพรุ่งนี้เจอกันนะ :)</span>
-                            <time>02:12</time>
-                        </div>
-
-                        <div class="full-message">
-                            <b>พี่เตชิน</b>
-                            <span>อย่าลืมกินข้าวด้วย</span>
-                            <time>00:48</time>
-                        </div>
-
-                        <div class="full-message">
-                            <b>ระบบ</b>
-                            <span>อัปเดตข้อมูลเรียบร้อยแล้ว</span>
-                            <time>เมื่อวาน</time>
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <section
-                    class="dashboard-page"
-                    data-page-content="schedule"
-                >
-
-                    <div class="page-heading">
-
-                        <span>
-                            SCHEDULE
-                        </span>
-
-                        <h1>
-                            ตารางงาน
-                        </h1>
-
-                        <p>
-                            ตารางและกิจกรรมของคุณ
-                        </p>
-
-                    </div>
-
-                    <div class="empty-page-card">
-                        <i class="fa-solid fa-calendar"></i>
-                        <h2>ไม่มีรายการเพิ่มเติม</h2>
-                        <p>ตารางงานของคุณจะแสดงที่นี่</p>
-                    </div>
-
-                </section>
-
-
-                <section
-                    class="dashboard-page"
-                    data-page-content="notes"
-                >
-
-                    <div class="page-heading">
-
-                        <span>
-                            NOTES
-                        </span>
-
-                        <h1>
-                            บันทึก
-                        </h1>
-
-                        <p>
-                            เก็บข้อความและความคิดของคุณ
-                        </p>
-
-                    </div>
-
-                    <div class="empty-page-card">
-                        <i class="fa-solid fa-note-sticky"></i>
-                        <h2>ยังไม่มีบันทึก</h2>
-                        <p>เริ่มสร้างบันทึกแรกของคุณ</p>
-                    </div>
-
-                </section>
-
-
-                <section
-                    class="dashboard-page"
-                    data-page-content="files"
-                >
-
-                    <div class="page-heading">
-
-                        <span>
-                            FILES
-                        </span>
-
-                        <h1>
-                            ไฟล์ส่วนตัว
-                        </h1>
-
-                        <p>
-                            เอกสารและไฟล์ล่าสุด
-                        </p>
-
-                    </div>
-
-                    <div class="file-list-card">
-
-                        <div>
-                            <i class="fa-solid fa-file-word"></i>
-                            <span>เอกสารสรุป.docx</span>
-                            <small>2.4 MB</small>
-                        </div>
-
-                        <div>
-                            <i class="fa-solid fa-file-image"></i>
-                            <span>รูปภาพ.png</span>
-                            <small>1.8 MB</small>
-                        </div>
-
-                        <div>
-                            <i class="fa-solid fa-file-excel"></i>
-                            <span>รายการค่าใช้จ่าย.xlsx</span>
-                            <small>980 KB</small>
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <section
-                    class="dashboard-page"
-                    data-page-content="settings"
-                >
-
-                    <div class="page-heading">
-
-                        <span>
-                            SETTINGS
-                        </span>
-
-                        <h1>
-                            ตั้งค่า
-                        </h1>
-
-                        <p>
-                            ปรับแต่ง Dashboard ของคุณ
-                        </p>
-
-                    </div>
-
-
-                    <div class="settings-list">
-
-                        <button>
-                            <i class="fa-solid fa-palette"></i>
-                            <span>การแสดงผล</span>
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
-
-                        <button>
-                            <i class="fa-solid fa-language"></i>
-                            <span>ภาษา</span>
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
-
-                        <button>
-                            <i class="fa-solid fa-bell"></i>
-                            <span>การแจ้งเตือน</span>
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
-
-                        <button>
-                            <i class="fa-solid fa-lock"></i>
-                            <span>ความเป็นส่วนตัว</span>
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
-
-                    </div>
-
-                </section>
-
-
-            </main>
-
-
-            <!-- =========================================
-                 FOOTER
-                 ========================================= -->
-
-            <footer class="dashboard-footer">
-
-                <span>
-                    Good things take time.
-                </span>
-
-                <div>
-
-                    <span>
-                        DASHBOARD v2.0
-                    </span>
-
-                    <span>
-                        ●
-                    </span>
-
-                </div>
-
-            </footer>
 
         </div>
+
     `;
 
 
-    document.body.appendChild(dashboard);
+    document.body.appendChild(overlay);
 
 
-    // =====================================================
-    // ELEMENTS
-    // =====================================================
+    setupDashboardEvents();
 
-    const selectorButton =
-        dashboard.querySelector(
-            '#dashboard-selector-button'
-        );
+    renderDashboardPage('home');
 
-    const selectorMenu =
-        dashboard.querySelector(
-            '#dashboard-selector-menu'
-        );
-
-    const closeButton =
-        dashboard.querySelector(
-            '#dashboard-close'
-        );
+}
 
 
-    // =====================================================
-    // SELECTOR OPEN / CLOSE
-    // =====================================================
+/* =========================================================
+   DASHBOARD EVENTS
+   ========================================================= */
 
-    selectorButton.addEventListener(
-        'click',
-        (event) => {
+function setupDashboardEvents() {
 
-            event.stopPropagation();
+    const overlay =
+        document.querySelector(`#${DASHBOARD_ID}`);
 
-            selectorMenu.classList.toggle('open');
-
-        }
-    );
+    if (!overlay) return;
 
 
-    document.addEventListener(
-        'click',
-        (event) => {
+    /*
+     * Select navigation
+     */
 
-            if (
-                !selectorButton.contains(event.target) &&
-                !selectorMenu.contains(event.target)
-            ) {
+    const select =
+        overlay.querySelector('#dashboard-page-select');
 
-                selectorMenu.classList.remove(
-                    'open'
-                );
+    if (select) {
 
-            }
+        select.addEventListener('change', () => {
 
-        }
-    );
-
-
-    // =====================================================
-    // PAGE SELECTION
-    // =====================================================
-
-    dashboard
-        .querySelectorAll(
-            '.dashboard-select-item'
-        )
-        .forEach((item) => {
-
-            item.addEventListener(
-                'click',
-                () => {
-
-                    const page =
-                        item.dataset.page;
-
-                    const title =
-                        item.dataset.title;
-
-                    const subtitle =
-                        item.dataset.subtitle;
-
-                    const icon =
-                        item.dataset.icon;
-
-
-                    // Update selector
-                    dashboard.querySelector(
-                        '#dashboard-current-title'
-                    ).textContent = title;
-
-                    dashboard.querySelector(
-                        '#dashboard-current-subtitle'
-                    ).textContent = subtitle;
-
-                    dashboard.querySelector(
-                        '#dashboard-current-icon'
-                    ).innerHTML =
-                        `<i class="fa-solid ${icon}"></i>`;
-
-
-                    // Active selector
-                    dashboard
-                        .querySelectorAll(
-                            '.dashboard-select-item'
-                        )
-                        .forEach(
-                            (button) => {
-                                button.classList.remove(
-                                    'active'
-                                );
-                            }
-                        );
-
-                    item.classList.add('active');
-
-
-                    // Change page
-                    dashboard
-                        .querySelectorAll(
-                            '.dashboard-page'
-                        )
-                        .forEach(
-                            (pageElement) => {
-
-                                pageElement.classList.remove(
-                                    'active'
-                                );
-
-                            }
-                        );
-
-
-                    const targetPage =
-                        dashboard.querySelector(
-                            `[data-page-content="${page}"]`
-                        );
-
-                    if (targetPage) {
-
-                        targetPage.classList.add(
-                            'active'
-                        );
-
-                    }
-
-
-                    selectorMenu.classList.remove(
-                        'open'
-                    );
-
-                }
-            );
+            renderDashboardPage(select.value);
 
         });
 
+    }
 
-    // =====================================================
-    // CLOSE DASHBOARD
-    // =====================================================
 
-    closeButton.addEventListener(
-        'click',
-        async () => {
+    /*
+     * Close button
+     */
 
-            dashboard.classList.remove(
-                'open'
-            );
+    const closeButton =
+        overlay.querySelector('#dashboard-close');
 
-            try {
+    if (closeButton) {
 
-                if (
-                    document.fullscreenElement
-                ) {
+        closeButton.addEventListener('click', () => {
 
-                    await document.exitFullscreen();
+            closeDashboard();
 
-                }
+        });
 
-            } catch (error) {
+    }
 
-                console.log(
-                    '[Dashboard] Fullscreen exit failed',
-                    error
-                );
 
-            }
+    /*
+     * Click outside app
+     */
+
+    overlay.addEventListener('click', (event) => {
+
+        if (event.target === overlay) {
+            closeDashboard();
+        }
+
+    });
+
+}
+
+
+/* =========================================================
+   OPEN DASHBOARD
+   ========================================================= */
+
+async function openDashboard() {
+
+    const overlay =
+        document.querySelector(`#${DASHBOARD_ID}`);
+
+    if (!overlay) return;
+
+
+    overlay.classList.add('dashboard-visible');
+
+
+    /*
+     * พยายาม Fullscreen
+     */
+
+    try {
+
+        if (
+            document.documentElement.requestFullscreen &&
+            !document.fullscreenElement
+        ) {
+
+            await document.documentElement.requestFullscreen();
 
         }
-    );
+
+    } catch (error) {
+
+        /*
+         * ถ้า browser ไม่อนุญาต fullscreen
+         * Dashboard overlay ยังเปิดตามปกติ
+         */
+
+        console.log(
+            '[Dashboard] Fullscreen unavailable'
+        );
+
+    }
 
 
-    // =====================================================
-    // OPEN DASHBOARD
-    // =====================================================
+    updateDashboardClock();
 
-    menuItem.addEventListener(
-        'click',
-        async () => {
+    if (dashboardClockTimer) {
+        clearInterval(dashboardClockTimer);
+    }
 
-            dashboard.classList.add(
-                'open'
-            );
+    dashboardClockTimer =
+        setInterval(
+            updateDashboardClock,
+            1000
+        );
 
-            try {
+}
 
-                if (
-                    !document.fullscreenElement
-                ) {
 
-                    await document.documentElement
-                        .requestFullscreen();
+/* =========================================================
+   CLOSE DASHBOARD
+   ========================================================= */
 
-                }
+async function closeDashboard() {
 
-            } catch (error) {
+    const overlay =
+        document.querySelector(`#${DASHBOARD_ID}`);
 
-                console.log(
-                    '[Dashboard] Fullscreen unavailable',
-                    error
-                );
+    if (overlay) {
+        overlay.classList.remove('dashboard-visible');
+    }
 
-            }
+
+    if (dashboardClockTimer) {
+
+        clearInterval(
+            dashboardClockTimer
+        );
+
+        dashboardClockTimer = null;
+
+    }
+
+
+    try {
+
+        if (document.fullscreenElement) {
+
+            await document.exitFullscreen();
 
         }
-    );
+
+    } catch (error) {
+
+        console.log(
+            '[Dashboard] Exit fullscreen unavailable'
+        );
+
+    }
+
+}
 
 
-    // =====================================================
-    // ESC / FULLSCREEN CHANGE
-    // =====================================================
+/* =========================================================
+   CLOCK
+   ========================================================= */
 
-    document.addEventListener(
-        'fullscreenchange',
-        () => {
+function updateDashboardClock() {
 
-            if (
-                !document.fullscreenElement &&
-                dashboard.classList.contains('open')
-            ) {
+    const timeElement =
+        document.querySelector(
+            '#dashboard-clock'
+        );
 
-                // Keep dashboard visible.
-                // Browser fullscreen and Dashboard UI
-                // are independent.
-                console.log(
-                    '[Dashboard] Browser fullscreen closed.'
-                );
-
-            }
-
-        }
-    );
+    const dateElement =
+        document.querySelector(
+            '#dashboard-date'
+        );
 
 
-    // =====================================================
-    // CLOCK
-    // =====================================================
+    const now = new Date();
 
-    function updateClock() {
 
-        const now = new Date();
+    if (timeElement) {
 
-        const time =
+        timeElement.textContent =
             now.toLocaleTimeString(
                 'th-TH',
                 {
@@ -1346,69 +518,1418 @@ function createDashboard(optionsMenu) {
                 }
             );
 
-        const date =
+    }
+
+
+    if (dateElement) {
+
+        dateElement.textContent =
             now.toLocaleDateString(
-                'en-GB',
+                'th-TH',
                 {
-                    day: '2-digit',
-                    month: 'short',
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
                     year: 'numeric'
                 }
             );
 
+    }
 
-        const clock =
-            dashboard.querySelector(
-                '#dashboard-clock'
-            );
-
-        const dateElement =
-            dashboard.querySelector(
-                '#dashboard-date'
-            );
+}
 
 
-        if (clock) {
-            clock.textContent = time;
-        }
+/* =========================================================
+   RENDER PAGE
+   ========================================================= */
 
-        if (dateElement) {
-            dateElement.textContent = date;
+function renderDashboardPage(page) {
+
+    const content =
+        document.querySelector(
+            '#dashboard-content'
+        );
+
+    if (!content) return;
+
+
+    switch (page) {
+
+        case 'account':
+            content.innerHTML =
+                renderAccountPage();
+            break;
+
+
+        case 'bank':
+            content.innerHTML =
+                renderBankPage();
+            break;
+
+
+        case 'messages':
+            content.innerHTML =
+                renderMessagesPage();
+            break;
+
+
+        case 'schedule':
+            content.innerHTML =
+                renderSchedulePage();
+            break;
+
+
+        case 'notes':
+            content.innerHTML =
+                renderNotesPage();
+            break;
+
+
+        case 'files':
+            content.innerHTML =
+                renderFilesPage();
+            break;
+
+
+        case 'settings':
+            content.innerHTML =
+                renderSettingsPage();
+            break;
+
+
+        default:
+            content.innerHTML =
+                renderHomePage();
+
+    }
+
+
+    updateNavigationText(page);
+
+    setupPageEvents(page);
+
+}
+
+
+/* =========================================================
+   NAVIGATION TEXT
+   ========================================================= */
+
+function updateNavigationText(page) {
+
+    const title =
+        document.querySelector(
+            '#dashboard-current-title'
+        );
+
+    const subtitle =
+        document.querySelector(
+            '#dashboard-current-subtitle'
+        );
+
+
+    const pages = {
+
+        home: [
+            'หน้าหลัก',
+            'Home'
+        ],
+
+        account: [
+            'บัญชี',
+            'Account'
+        ],
+
+        bank: [
+            'ธนาคาร',
+            'Bank'
+        ],
+
+        messages: [
+            'ข้อความ',
+            'Messages'
+        ],
+
+        schedule: [
+            'ตารางเวลา',
+            'Schedule'
+        ],
+
+        notes: [
+            'โน้ต',
+            'Notes'
+        ],
+
+        files: [
+            'ไฟล์',
+            'Files'
+        ],
+
+        settings: [
+            'ตั้งค่า',
+            'Settings'
+        ]
+
+    };
+
+
+    const data =
+        pages[page] || pages.home;
+
+
+    if (title) {
+        title.textContent = data[0];
+    }
+
+    if (subtitle) {
+        subtitle.textContent = data[1];
+    }
+
+}
+
+
+/* =========================================================
+   USER DATA
+   ========================================================= */
+
+function getUserName() {
+
+    /*
+     * SillyTavern global
+     */
+
+    if (
+        typeof window.name1 === 'string' &&
+        window.name1.trim()
+    ) {
+
+        return window.name1.trim();
+
+    }
+
+
+    /*
+     * DOM fallback
+     */
+
+    const possibleElements = [
+
+        '#user_avatar + .avatar_name',
+
+        '#name1',
+
+        '.user-name'
+
+    ];
+
+
+    for (
+        const selector of possibleElements
+    ) {
+
+        const element =
+            document.querySelector(selector);
+
+        if (
+            element &&
+            element.textContent.trim()
+        ) {
+
+            return element.textContent.trim();
+
         }
 
     }
 
 
-    updateClock();
+    return 'User';
 
-    setInterval(
-        updateClock,
-        1000
-    );
-
-
-    console.log(
-        '[Dashboard] Ready.'
-    );
 }
 
 
-// =========================================================
-// CALENDAR
-// =========================================================
+/* =========================================================
+   USER AVATAR
+   ========================================================= */
 
-function generateCalendar() {
+function getUserAvatar() {
 
-    const days = [];
+    const selectors = [
+
+        '#user_avatar img',
+
+        '#user_avatar',
+
+        '.user_avatar img',
+
+        '.avatar.user img'
+
+    ];
+
+
+    for (
+        const selector of selectors
+    ) {
+
+        const element =
+            document.querySelector(selector);
+
+        if (!element) continue;
+
+
+        if (
+            element.tagName === 'IMG' &&
+            element.src
+        ) {
+
+            return element.src;
+
+        }
+
+
+        const background =
+            getComputedStyle(element)
+                .backgroundImage;
+
+
+        if (
+            background &&
+            background !== 'none'
+        ) {
+
+            const match =
+                background.match(
+                    /url\(["']?(.*?)["']?\)/
+                );
+
+            if (match) {
+                return match[1];
+            }
+
+        }
+
+    }
+
+
+    return '';
+
+}
+
+
+/* =========================================================
+   USER DESCRIPTION
+   ========================================================= */
+
+function getUserDescription() {
+
+    return localStorage.getItem(
+        'st_dashboard_user_description'
+    ) || 'ชีวิตในแบบที่ต้องการ';
+
+}
+
+
+function saveUserDescription(value) {
+
+    localStorage.setItem(
+        'st_dashboard_user_description',
+        value
+    );
+
+}
+
+
+/* =========================================================
+   HOME
+   ========================================================= */
+
+function renderHomePage() {
+
+    const username =
+        getUserName();
+
+    const avatar =
+        getUserAvatar();
+
+    const description =
+        getUserDescription();
+
+
+    return `
+
+        <div class="dashboard-inner">
+
+            <section class="dashboard-welcome">
+
+                <div>
+
+                    <div class="welcome-small">
+                        Good morning,
+                    </div>
+
+                    <h1>
+                        ${escapeHTML(username)}
+                    </h1>
+
+                    <p>
+                        ขอให้วันนี้เป็นวันที่ดีนะ
+                    </p>
+
+                </div>
+
+                <div class="welcome-decoration">
+                    ✦
+                </div>
+
+            </section>
+
+
+            <div class="dashboard-grid">
+
+
+                <!-- ACCOUNT -->
+
+                <section class="dashboard-card account-card">
+
+                    <div class="dashboard-card-header">
+
+                        <div class="dashboard-card-label">
+                            ACCOUNT
+                        </div>
+
+                        <button
+                            class="dashboard-card-more"
+                            type="button"
+                        >
+                            •••
+                        </button>
+
+                    </div>
+
+
+                    <div class="account-main">
+
+                        <div class="account-avatar-wrap">
+
+                            ${
+                                avatar
+                                ?
+                                `
+                                <img
+                                    class="account-avatar"
+                                    src="${escapeAttribute(avatar)}"
+                                    alt=""
+                                >
+                                `
+                                :
+                                `
+                                <div class="account-avatar fallback">
+                                    ${escapeHTML(
+                                        username
+                                            .charAt(0)
+                                            .toUpperCase()
+                                    )}
+                                </div>
+                                `
+                            }
+
+                            <span
+                                class="account-online-dot"
+                            ></span>
+
+                        </div>
+
+
+                        <div class="account-info">
+
+                            <div class="account-name">
+                                ${escapeHTML(username)}
+                            </div>
+
+                            <div class="account-status">
+
+                                <span></span>
+
+                                ออนไลน์
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- EDITABLE BIO -->
+
+                    <div class="account-description-wrap">
+
+                        <textarea
+                            id="dashboard-user-description"
+                            class="account-description-input"
+                            maxlength="160"
+                            placeholder="เขียนสิ่งที่อยากบอกเกี่ยวกับตัวคุณ..."
+                        >${escapeHTML(description)}</textarea>
+
+
+                        <div class="account-edit-row">
+
+                            <span class="account-edit-hint">
+                                แก้ไขข้อมูลส่วนตัว
+                            </span>
+
+                            <button
+                                id="dashboard-save-description"
+                                class="account-save-btn"
+                                type="button"
+                            >
+                                บันทึก
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- BANK -->
+
+                <section class="dashboard-card bank-card">
+
+                    <div class="dashboard-card-header">
+
+                        <div>
+
+                            <div class="dashboard-card-label">
+                                BANK
+                            </div>
+
+                            <div class="dashboard-card-title">
+                                บัญชีหลัก
+                            </div>
+
+                        </div>
+
+                        <i class="fa-solid fa-building-columns bank-icon"></i>
+
+                    </div>
+
+
+                    <div class="bank-balance-card">
+
+                        <div class="bank-balance-label">
+                            ยอดเงินคงเหลือ
+                        </div>
+
+                        <div class="bank-balance">
+                            ฿ 12,450.00
+                        </div>
+
+                        <div class="bank-number">
+                            •••• &nbsp; •••• &nbsp; •••• &nbsp; 9987
+                        </div>
+
+                    </div>
+
+
+                    <div class="bank-actions">
+
+                        <button>
+                            <i class="fa-solid fa-arrow-up"></i>
+                            <span>โอนเงิน</span>
+                        </button>
+
+                        <button>
+                            <i class="fa-solid fa-arrow-down"></i>
+                            <span>รับเงิน</span>
+                        </button>
+
+                        <button>
+                            <i class="fa-solid fa-receipt"></i>
+                            <span>ประวัติ</span>
+                        </button>
+
+                        <button>
+                            <i class="fa-regular fa-credit-card"></i>
+                            <span>บัตร</span>
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <!-- CALENDAR -->
+
+                <section class="dashboard-card calendar-card">
+
+                    <div class="dashboard-card-header">
+
+                        <div>
+
+                            <div class="dashboard-card-label">
+                                SCHEDULE
+                            </div>
+
+                            <div class="dashboard-card-title">
+                                September 2026
+                            </div>
+
+                        </div>
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                    </div>
+
+                    <div
+                        id="dashboard-calendar"
+                        class="dashboard-calendar"
+                    ></div>
+
+                </section>
+
+
+                <!-- MESSAGES -->
+
+                <section class="dashboard-card messages-card">
+
+                    <div class="dashboard-card-header">
+
+                        <div>
+
+                            <div class="dashboard-card-label">
+                                MESSAGES
+                            </div>
+
+                            <div class="dashboard-card-title">
+                                ข้อความล่าสุด
+                            </div>
+
+                        </div>
+
+                        <span class="message-count">
+                            3
+                        </span>
+
+                    </div>
+
+
+                    <div class="message-list">
+
+                        <div class="message-item">
+
+                            <div class="message-avatar">
+                                A
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Alex
+                                </strong>
+
+                                <p>
+                                    แล้วเจอกันนะ
+                                </p>
+
+                            </div>
+
+                            <time>
+                                10:24
+                            </time>
+
+                        </div>
+
+
+                        <div class="message-item">
+
+                            <div class="message-avatar">
+                                M
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Mina
+                                </strong>
+
+                                <p>
+                                    ส่งไฟล์ให้แล้ว
+                                </p>
+
+                            </div>
+
+                            <time>
+                                09:18
+                            </time>
+
+                        </div>
+
+
+                        <div class="message-item">
+
+                            <div class="message-avatar">
+                                K
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Kim
+                                </strong>
+
+                                <p>
+                                    อย่าลืมนัดวันนี้
+                                </p>
+
+                            </div>
+
+                            <time>
+                                เมื่อวาน
+                            </time>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- TASKS -->
+
+                <section class="dashboard-card tasks-card">
+
+                    <div class="dashboard-card-header">
+
+                        <div>
+
+                            <div class="dashboard-card-label">
+                                TASKS
+                            </div>
+
+                            <div class="dashboard-card-title">
+                                วันนี้
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="task-list">
+
+                        <label class="task-item">
+
+                            <input
+                                type="checkbox"
+                            >
+
+                            <span>
+                                ตรวจสอบข้อความ
+                            </span>
+
+                        </label>
+
+
+                        <label class="task-item">
+
+                            <input
+                                type="checkbox"
+                            >
+
+                            <span>
+                                อัปเดตไฟล์งาน
+                            </span>
+
+                        </label>
+
+
+                        <label class="task-item">
+
+                            <input
+                                type="checkbox"
+                            >
+
+                            <span>
+                                เขียนโน้ตสำหรับพรุ่งนี้
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </section>
+
+
+                <!-- QUICK NOTE -->
+
+                <section class="dashboard-card quick-note-card">
+
+                    <div class="dashboard-card-header">
+
+                        <div>
+
+                            <div class="dashboard-card-label">
+                                QUICK NOTE
+                            </div>
+
+                            <div class="dashboard-card-title">
+                                โน้ตสั้น ๆ
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <textarea
+                        class="quick-note-input"
+                        placeholder="เขียนอะไรไว้ตรงนี้..."
+                    ></textarea>
+
+                </section>
+
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   ACCOUNT PAGE
+   ========================================================= */
+
+function renderAccountPage() {
+
+    const username =
+        getUserName();
+
+    const avatar =
+        getUserAvatar();
+
+    const description =
+        getUserDescription();
+
+
+    return `
+
+        <div class="dashboard-inner dashboard-single-page">
+
+            <section class="dashboard-page-heading">
+
+                <div class="dashboard-card-label">
+                    ACCOUNT
+                </div>
+
+                <h1>
+                    บัญชีของคุณ
+                </h1>
+
+                <p>
+                    จัดการข้อมูลส่วนตัวและโปรไฟล์
+                </p>
+
+            </section>
+
+
+            <section class="dashboard-card account-page-card">
+
+                <div class="account-main">
+
+                    <div class="account-avatar-wrap">
+
+                        ${
+                            avatar
+                            ?
+                            `
+                            <img
+                                class="account-avatar"
+                                src="${escapeAttribute(avatar)}"
+                                alt=""
+                            >
+                            `
+                            :
+                            `
+                            <div class="account-avatar fallback">
+                                ${escapeHTML(
+                                    username
+                                        .charAt(0)
+                                        .toUpperCase()
+                                )}
+                            </div>
+                            `
+                        }
+
+                        <span class="account-online-dot"></span>
+
+                    </div>
+
+
+                    <div class="account-info">
+
+                        <div class="account-name">
+                            ${escapeHTML(username)}
+                        </div>
+
+                        <div class="account-status">
+                            <span></span>
+                            ออนไลน์
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="account-description-wrap">
+
+                    <textarea
+                        id="dashboard-user-description"
+                        class="account-description-input"
+                        maxlength="160"
+                    >${escapeHTML(description)}</textarea>
+
+
+                    <div class="account-edit-row">
+
+                        <span class="account-edit-hint">
+                            ข้อความเกี่ยวกับตัวคุณ
+                        </span>
+
+                        <button
+                            id="dashboard-save-description"
+                            class="account-save-btn"
+                            type="button"
+                        >
+                            บันทึก
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   BANK PAGE
+   ========================================================= */
+
+function renderBankPage() {
+
+    return `
+
+        <div class="dashboard-inner dashboard-single-page">
+
+            <section class="dashboard-page-heading">
+
+                <div class="dashboard-card-label">
+                    BANK
+                </div>
+
+                <h1>
+                    บัญชีหลัก
+                </h1>
+
+                <p>
+                    ข้อมูลทางการเงิน
+                </p>
+
+            </section>
+
+
+            <section class="dashboard-card large-bank-card">
+
+                <div class="bank-balance-label">
+                    ยอดเงินคงเหลือ
+                </div>
+
+                <div class="bank-balance large">
+                    ฿ 12,450.00
+                </div>
+
+                <div class="bank-number">
+                    •••• &nbsp; •••• &nbsp; •••• &nbsp; 9987
+                </div>
+
+            </section>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   MESSAGES PAGE
+   ========================================================= */
+
+function renderMessagesPage() {
+
+    return `
+
+        <div class="dashboard-inner dashboard-single-page">
+
+            <section class="dashboard-page-heading">
+
+                <div class="dashboard-card-label">
+                    MESSAGES
+                </div>
+
+                <h1>
+                    ข้อความ
+                </h1>
+
+                <p>
+                    ข้อความล่าสุดของคุณ
+                </p>
+
+            </section>
+
+
+            <section class="dashboard-card">
+
+                <div class="message-list">
+
+                    <div class="message-item">
+
+                        <div class="message-avatar">
+                            A
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Alex
+                            </strong>
+
+                            <p>
+                                แล้วเจอกันนะ
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="message-item">
+
+                        <div class="message-avatar">
+                            M
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Mina
+                            </strong>
+
+                            <p>
+                                ส่งไฟล์ให้แล้ว
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   SCHEDULE PAGE
+   ========================================================= */
+
+function renderSchedulePage() {
+
+    return `
+
+        <div class="dashboard-inner dashboard-single-page">
+
+            <section class="dashboard-page-heading">
+
+                <div class="dashboard-card-label">
+                    SCHEDULE
+                </div>
+
+                <h1>
+                    ตารางเวลา
+                </h1>
+
+                <p>
+                    สิ่งที่ต้องทำและนัดหมาย
+                </p>
+
+            </section>
+
+
+            <section class="dashboard-card">
+
+                <div class="task-list">
+
+                    <label class="task-item">
+                        <input type="checkbox">
+                        <span>ตรวจสอบข้อความ</span>
+                    </label>
+
+                    <label class="task-item">
+                        <input type="checkbox">
+                        <span>อัปเดตไฟล์งาน</span>
+                    </label>
+
+                    <label class="task-item">
+                        <input type="checkbox">
+                        <span>เขียนโน้ตสำหรับพรุ่งนี้</span>
+                    </label>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   NOTES PAGE
+   ========================================================= */
+
+function renderNotesPage() {
+
+    return `
+
+        <div class="dashboard-inner dashboard-single-page">
+
+            <section class="dashboard-page-heading">
+
+                <div class="dashboard-card-label">
+                    NOTES
+                </div>
+
+                <h1>
+                    โน้ต
+                </h1>
+
+                <p>
+                    พื้นที่สำหรับจดสิ่งต่าง ๆ
+                </p>
+
+            </section>
+
+
+            <section class="dashboard-card notes-editor-card">
+
+                <textarea
+                    id="dashboard-main-note"
+                    class="dashboard-main-note"
+                    placeholder="เขียนโน้ตของคุณ..."
+                ></textarea>
+
+            </section>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   FILES PAGE
+   ========================================================= */
+
+function renderFilesPage() {
+
+    return `
+
+        <div class="dashboard-inner dashboard-single-page">
+
+            <section class="dashboard-page-heading">
+
+                <div class="dashboard-card-label">
+                    FILES
+                </div>
+
+                <h1>
+                    ไฟล์
+                </h1>
+
+                <p>
+                    จัดการไฟล์ของคุณ
+                </p>
+
+            </section>
+
+
+            <section class="dashboard-card file-list">
+
+                <div class="file-item">
+
+                    <i class="fa-regular fa-file"></i>
+
+                    <div>
+                        <strong>My Notes.txt</strong>
+                        <span>Text file</span>
+                    </div>
+
+                </div>
+
+
+                <div class="file-item">
+
+                    <i class="fa-regular fa-image"></i>
+
+                    <div>
+                        <strong>Profile.png</strong>
+                        <span>Image</span>
+                    </div>
+
+                </div>
+
+
+                <div class="file-item">
+
+                    <i class="fa-regular fa-file-lines"></i>
+
+                    <div>
+                        <strong>Dashboard.css</strong>
+                        <span>Stylesheet</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   SETTINGS PAGE
+   ========================================================= */
+
+function renderSettingsPage() {
+
+    return `
+
+        <div class="dashboard-inner dashboard-single-page">
+
+            <section class="dashboard-page-heading">
+
+                <div class="dashboard-card-label">
+                    SETTINGS
+                </div>
+
+                <h1>
+                    ตั้งค่า
+                </h1>
+
+                <p>
+                    ปรับแต่ง Dashboard
+                </p>
+
+            </section>
+
+
+            <section class="dashboard-card settings-list">
+
+                <div class="setting-item">
+
+                    <div>
+                        <strong>
+                            Glass Effect
+                        </strong>
+
+                        <span>
+                            เอฟเฟกต์กระจกโปร่งแสง
+                        </span>
+                    </div>
+
+                    <input
+                        type="checkbox"
+                        checked
+                    >
+
+                </div>
+
+
+                <div class="setting-item">
+
+                    <div>
+                        <strong>
+                            Notifications
+                        </strong>
+
+                        <span>
+                            แสดงการแจ้งเตือน
+                        </span>
+                    </div>
+
+                    <input
+                        type="checkbox"
+                        checked
+                    >
+
+                </div>
+
+            </section>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   PAGE EVENTS
+   ========================================================= */
+
+function setupPageEvents(page) {
+
+    /*
+     * Account save
+     */
+
+    if (
+        page === 'home' ||
+        page === 'account'
+    ) {
+
+        const saveButton =
+            document.querySelector(
+                '#dashboard-save-description'
+            );
+
+        const textarea =
+            document.querySelector(
+                '#dashboard-user-description'
+            );
+
+
+        if (
+            saveButton &&
+            textarea
+        ) {
+
+            saveButton.addEventListener(
+                'click',
+                () => {
+
+                    saveUserDescription(
+                        textarea.value.trim()
+                    );
+
+
+                    saveButton.textContent =
+                        'บันทึกแล้ว';
+
+
+                    setTimeout(() => {
+
+                        saveButton.textContent =
+                            'บันทึก';
+
+                    }, 1200);
+
+                }
+            );
+
+        }
+
+    }
+
+
+    /*
+     * Calendar
+     */
+
+    if (page === 'home') {
+
+        const calendar =
+            document.querySelector(
+                '#dashboard-calendar'
+            );
+
+        if (calendar) {
+            generateCalendar(calendar);
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   CALENDAR
+   ========================================================= */
+
+function generateCalendar(container) {
+
+    const year = 2026;
+    const month = 8; // September
 
     const firstDay =
         new Date(
-            2026,
-            8,
+            year,
+            month,
             1
         ).getDay();
 
-    const totalDays = 30;
+    const daysInMonth =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    const weekdays = [
+        'S',
+        'M',
+        'T',
+        'W',
+        'T',
+        'F',
+        'S'
+    ];
+
+
+    let html = '';
+
+
+    weekdays.forEach(day => {
+
+        html += `
+            <div class="calendar-weekday">
+                ${day}
+            </div>
+        `;
+
+    });
 
 
     for (
@@ -1417,39 +1938,57 @@ function generateCalendar() {
         i++
     ) {
 
-        days.push(
-            '<span class="calendar-empty"></span>'
-        );
+        html += `
+            <div class="calendar-empty"></div>
+        `;
 
     }
 
 
     for (
         let day = 1;
-        day <= totalDays;
+        day <= daysInMonth;
         day++
     ) {
 
-        const active =
+        const selected =
             day === 14
-                ? 'today'
+                ? 'calendar-selected'
                 : '';
 
-        days.push(
-            `
-            <span class="${active}">
+
+        html += `
+            <div class="calendar-day ${selected}">
                 ${day}
-            </span>
-            `
-        );
+            </div>
+        `;
 
     }
 
 
-    return days.join('');
+    container.innerHTML = html;
+
 }
 
 
-export {
-    init
-};
+/* =========================================================
+   SECURITY HELPERS
+   ========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+}
+
+
+function escapeAttribute(value) {
+
+    return escapeHTML(value);
+
+}
