@@ -1,11 +1,14 @@
-(() => {
-    'use strict';
+function init() {
+    console.log('[Magic System UI] Loaded');
 
-    console.log('[Magic System UI] Extension loaded.');
+    // ป้องกันสร้างซ้ำ
+    if (document.getElementById('magic-system-home')) {
+        return;
+    }
 
-    // ==============================
-    // CREATE HOME BUTTON
-    // ==============================
+    // =========================
+    // HOME BUTTON
+    // =========================
 
     const homeButton = document.createElement('button');
 
@@ -20,18 +23,19 @@
     document.body.appendChild(homeButton);
 
 
-    // ==============================
-    // CREATE SYSTEM WINDOW
-    // ==============================
+    // =========================
+    // SYSTEM OVERLAY
+    // =========================
 
-    const systemOverlay = document.createElement('div');
+    const overlay = document.createElement('div');
 
-    systemOverlay.id = 'magic-system-overlay';
+    overlay.id = 'magic-system-overlay';
 
-    systemOverlay.innerHTML = `
+    overlay.innerHTML = `
         <div class="magic-system-window">
 
             <div class="magic-system-header">
+
                 <div>
                     <div class="system-small-title">
                         PLAYER INTERFACE
@@ -48,6 +52,7 @@
                 >
                     ×
                 </button>
+
             </div>
 
 
@@ -92,26 +97,22 @@
 
                         <div class="status-row">
                             <span>HP</span>
+
                             <div class="status-bar">
                                 <div class="status-fill hp"></div>
                             </div>
+
                             <span>100 / 100</span>
                         </div>
 
                         <div class="status-row">
                             <span>MP</span>
+
                             <div class="status-bar">
                                 <div class="status-fill mp"></div>
                             </div>
-                            <span>80 / 100</span>
-                        </div>
 
-                        <div class="status-row">
-                            <span>EXP</span>
-                            <div class="status-bar">
-                                <div class="status-fill exp"></div>
-                            </div>
-                            <span>65%</span>
+                            <span>80 / 100</span>
                         </div>
 
                     </div>
@@ -155,30 +156,6 @@
 
                 </div>
 
-
-                <div class="system-section">
-
-                    <div class="section-title">
-                        SYSTEM RECORD
-                    </div>
-
-                    <div class="record-card">
-                        <span>Current Level</span>
-                        <strong>Lv. 01</strong>
-                    </div>
-
-                    <div class="record-card">
-                        <span>Available Points</span>
-                        <strong>05</strong>
-                    </div>
-
-                    <div class="record-card">
-                        <span>System Status</span>
-                        <strong>ONLINE</strong>
-                    </div>
-
-                </div>
-
             </div>
 
 
@@ -190,28 +167,33 @@
         </div>
     `;
 
-    document.body.appendChild(systemOverlay);
+    document.body.appendChild(overlay);
 
 
-    // ==============================
-    // OPEN / CLOSE
-    // ==============================
+    // =========================
+    // OPEN
+    // =========================
 
     homeButton.addEventListener('click', () => {
-
-        systemOverlay.classList.add('open');
-
+        overlay.classList.add('open');
     });
 
 
-    document
-        .getElementById('magic-system-close')
-        .addEventListener('click', () => {
+    // =========================
+    // CLOSE
+    // =========================
 
-            systemOverlay.classList.remove('open');
+    const closeButton =
+        document.getElementById('magic-system-close');
 
-        });
+    closeButton.addEventListener('click', () => {
+        overlay.classList.remove('open');
+    });
 
 
-    console.log('[Magic System UI] Ready.');
-})();
+    console.log('[Magic System UI] Ready');
+}
+
+
+// SillyTavern Extension entry point
+export { init };
