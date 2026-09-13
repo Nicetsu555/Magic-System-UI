@@ -422,7 +422,7 @@ function createDashboard(optionsMenu) {
 
                         <button
                             data-page="account"
-                            data-title="ACCOUNT"
+                            data-title="แอคเคาท์"
                             data-subtitle="Account"
                             data-icon="fa-user"
                             class="dashboard-select-item"
