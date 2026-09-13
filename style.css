@@ -1,280 +1,121 @@
-/* =========================================================
+/* =====================================================
    DASHBOARD
-   Modern Glassmorphism UI
-   ========================================================= */
+   ===================================================== */
 
-
-/* =========================================================
-   ROOT
-   ========================================================= */
-
-#st-dashboard-overlay {
-
-    --dashboard-text: #4e4650;
-    --dashboard-muted: #8c828e;
-
-    --dashboard-pink: #c99fc3;
-    --dashboard-pink-dark: #a97ca5;
-
-    --dashboard-purple: #b5a0c4;
-
-    --dashboard-glass:
-        rgba(255, 255, 255, 0.62);
-
-    --dashboard-glass-light:
-        rgba(255, 255, 255, 0.42);
-
-    --dashboard-border:
-        rgba(255, 255, 255, 0.72);
-
+#dashboard-overlay {
 
     position: fixed;
 
     inset: 0;
 
-    z-index: 999999;
-
     width: 100vw;
     height: 100vh;
 
-    opacity: 0;
+    display: none;
 
-    visibility: hidden;
-
-    pointer-events: none;
-
-    transition:
-        opacity .25s ease,
-        visibility .25s ease;
-
-    color: var(--dashboard-text);
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-}
-
-
-/* =========================================================
-   VISIBLE
-   ========================================================= */
-
-#st-dashboard-overlay.dashboard-visible {
-
-    opacity: 1;
-
-    visibility: visible;
-
-    pointer-events: auto;
-
-}
-
-
-/* =========================================================
-   BACKGROUND
-   ========================================================= */
-
-#st-dashboard-overlay::before {
-
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
+    z-index: 2147483647;
 
     background:
-
-        radial-gradient(
-            circle at 10% 15%,
-            rgba(228, 192, 222, .55),
-            transparent 30%
-        ),
-
-        radial-gradient(
-            circle at 85% 20%,
-            rgba(199, 184, 221, .42),
-            transparent 32%
-        ),
-
-        radial-gradient(
-            circle at 50% 100%,
-            rgba(240, 210, 227, .55),
-            transparent 40%
-        ),
-
         linear-gradient(
             135deg,
-            #f9f4f8,
-            #eee7f0
+            rgba(30, 22, 35, 0.97),
+            rgba(20, 18, 28, 0.98)
         );
 
-    z-index: -2;
-
+    overflow: hidden;
 }
 
 
-/* =========================================================
-   APP
-   ========================================================= */
+#dashboard-overlay.open {
 
-#st-dashboard-overlay .dashboard-app {
+    display: block;
+}
+
+
+/* =====================================================
+   APP
+   ===================================================== */
+
+#dashboard-overlay .dashboard-app {
 
     position: relative;
 
     width: 100%;
     height: 100%;
 
-    overflow-y: auto;
-
-    overflow-x: hidden;
-
-    box-sizing: border-box;
-
-}
-
-
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-#st-dashboard-overlay .dashboard-header {
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 20;
-
     display: flex;
 
-    align-items: center;
+    flex-direction: column;
 
-    justify-content: space-between;
+    overflow: hidden;
 
-    gap: 20px;
-
-    padding:
-        22px
-        28px;
-
-    min-height: 96px;
-
-    box-sizing: border-box;
+    color: #332f38;
 
     background:
-        rgba(255,255,255,.48);
 
-    border-bottom:
-        1px solid
-        rgba(255,255,255,.55);
+        radial-gradient(
+            circle at 20% 10%,
+            rgba(255, 220, 235, 0.25),
+            transparent 30%
+        ),
 
-    backdrop-filter:
-        blur(24px);
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(210, 190, 240, 0.18),
+            transparent 35%
+        ),
 
-    -webkit-backdrop-filter:
-        blur(24px);
-
+        linear-gradient(
+            135deg,
+            #f2e9ee,
+            #e7dfe7
+        );
 }
 
 
-/* =========================================================
-   BRAND
-   ========================================================= */
+/* =====================================================
+   TOP BAR
+   ===================================================== */
 
-#st-dashboard-overlay .dashboard-brand {
+#dashboard-overlay .dashboard-topbar {
 
-    display: flex;
+    position: relative;
 
-    align-items: center;
-
-    gap: 15px;
+    z-index: 100;
 
     flex-shrink: 0;
 
-}
-
-
-#st-dashboard-overlay .dashboard-brand-icon {
-
-    width: 58px;
-    height: 58px;
+    min-height: 78px;
 
     display: flex;
 
     align-items: center;
-    justify-content: center;
 
-    border-radius: 20px;
+    gap: 25px;
+
+    padding:
+        14px 28px;
 
     background:
-        linear-gradient(
-            145deg,
-            #d5afd0,
-            #ae91bc
-        );
+        rgba(255, 250, 253, 0.52);
 
-    color: white;
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.65);
 
-    font-size: 23px;
+    backdrop-filter:
+        blur(20px);
 
-    box-shadow:
-        0 10px 25px
-        rgba(160, 125, 160, .18);
-
+    -webkit-backdrop-filter:
+        blur(20px);
 }
 
 
-#st-dashboard-overlay .dashboard-brand-text {
+/* =====================================================
+   BRAND
+   ===================================================== */
 
-    line-height: 1;
-
-}
-
-
-#st-dashboard-overlay .dashboard-title {
-
-    font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
-    font-size: 25px;
-
-    letter-spacing: 4px;
-
-    color: #4b414c;
-
-}
-
-
-#st-dashboard-overlay .dashboard-subtitle {
-
-    margin-top: 6px;
-
-    font-family:
-        Georgia,
-        serif;
-
-    font-size: 13px;
-
-    font-style: italic;
-
-    letter-spacing: 1px;
-
-    color:
-        rgba(105, 87, 105, .55);
-
-}
-
-
-/* =========================================================
-   SELECT NAVIGATION
-   ========================================================= */
-
-#st-dashboard-overlay .dashboard-navigation {
+#dashboard-overlay .dashboard-brand {
 
     display: flex;
 
@@ -282,32 +123,14 @@
 
     gap: 12px;
 
-    margin-left: auto;
-
-    min-width: 190px;
-
-    padding: 10px 14px;
-
-    border-radius: 25px;
-
-    background:
-        rgba(255,255,255,.65);
-
-    border:
-        1px solid
-        rgba(255,255,255,.75);
-
-    box-shadow:
-        0 8px 30px
-        rgba(125, 105, 130, .08);
-
+    min-width: 220px;
 }
 
 
-#st-dashboard-overlay .dashboard-nav-icon {
+#dashboard-overlay .dashboard-logo {
 
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
 
     display: flex;
 
@@ -316,492 +139,697 @@
 
     flex-shrink: 0;
 
-    border-radius: 16px;
+    border-radius: 14px;
+
+    color: #fff !important;
 
     background:
         linear-gradient(
-            145deg,
-            #d0a8ce,
-            #b08dbb
+            135deg,
+            #e8a8c0,
+            #a994bd
         );
 
-    color: white;
+    box-shadow:
+        0 8px 20px
+        rgba(170, 120, 160, 0.25);
+
+    font-size: 19px;
+
+    line-height: 1;
+}
+
+
+#dashboard-overlay .dashboard-title {
+
+    font-family:
+        Georgia,
+        serif;
 
     font-size: 20px;
 
+    letter-spacing: 4px;
+
+    color: #39333d;
 }
 
 
-#st-dashboard-overlay .dashboard-select-wrap {
+#dashboard-overlay .dashboard-subtitle {
+
+    margin-top: -2px;
+
+    color: #9b8290;
+
+    font-size: 11px;
+
+    font-style: italic;
+
+    letter-spacing: 1px;
+}
+
+
+/* =====================================================
+   SELECTOR
+   ===================================================== */
+
+#dashboard-overlay .dashboard-selector {
 
     position: relative;
 
-    flex: 1;
+    z-index: 200;
 
-    min-width: 100px;
+    width: 250px;
 
+    flex-shrink: 0;
 }
 
 
-#st-dashboard-overlay .dashboard-select-main {
+#dashboard-overlay .dashboard-selector-button {
+
+    width: 100%;
+
+    min-height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding:
+        10px 14px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.8) !important;
+
+    border-radius: 14px !important;
+
+    background:
+        rgba(255,255,255,0.55) !important;
+
+    color: #4d4450 !important;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 6px 20px
+        rgba(80,60,80,0.08);
+
+    backdrop-filter:
+        blur(16px);
+}
+
+
+#dashboard-overlay .dashboard-current-icon {
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 11px;
+
+    color: #fff !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e8aec4,
+            #aaa0c6
+        );
+}
+
+
+#dashboard-overlay .dashboard-selector-button
+span:nth-child(2) {
+
+    flex: 1;
 
     display: flex;
 
     flex-direction: column;
 
-    gap: 3px;
-
-    pointer-events: none;
-
+    text-align: left;
 }
 
 
-#st-dashboard-overlay #dashboard-current-title {
+#dashboard-overlay .dashboard-selector-button strong {
 
-    font-family:
-        Georgia,
-        serif;
-
-    font-size: 17px;
-
-    color: #554b55;
-
-}
-
-
-#st-dashboard-overlay #dashboard-current-subtitle {
-
-    font-family:
-        Georgia,
-        serif;
-
-    font-size: 12px;
-
-    color: #9b909b;
-
-}
-
-
-#st-dashboard-overlay #dashboard-page-select {
-
-    position: absolute;
-
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    opacity: 0;
-
-    cursor: pointer;
-
-    z-index: 5;
-
-}
-
-
-#st-dashboard-overlay .dashboard-select-arrow {
-
-    position: absolute;
-
-    right: 2px;
-
-    top: 50%;
-
-    transform:
-        translateY(-50%);
-
-    color: #817481;
+    color: #4d4450 !important;
 
     font-size: 13px;
 
-    pointer-events: none;
-
+    font-weight: 600;
 }
 
 
-/* =========================================================
-   HEADER BUTTONS
-   ========================================================= */
+#dashboard-overlay .dashboard-selector-button small {
 
-#st-dashboard-overlay .dashboard-header-actions {
+    color: #a38d9a !important;
+
+    font-size: 10px;
+}
+
+
+#dashboard-overlay .dashboard-selector-button > i {
+
+    color: #9d8795 !important;
+
+    font-size: 11px;
+}
+
+
+/* =====================================================
+   DROPDOWN
+   ===================================================== */
+
+#dashboard-overlay .dashboard-selector-menu {
+
+    position: absolute;
+
+    top: calc(100% + 8px);
+
+    left: 0;
+    right: 0;
+
+    padding: 8px;
+
+    display: none;
+
+    max-height: 70vh;
+
+    overflow-y: auto;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.8);
+
+    border-radius: 17px;
+
+    background:
+        rgba(250,246,249,0.96);
+
+    box-shadow:
+        0 18px 45px
+        rgba(55,40,60,0.18);
+
+    backdrop-filter:
+        blur(25px);
+}
+
+
+#dashboard-overlay .dashboard-selector-menu.open {
+
+    display: block;
+}
+
+
+#dashboard-overlay .dashboard-select-item {
+
+    width: 100%;
 
     display: flex;
 
     align-items: center;
 
-    gap: 10px;
+    gap: 12px;
 
+    padding:
+        10px;
+
+    margin:
+        2px 0;
+
+    border: none !important;
+
+    border-radius: 11px !important;
+
+    background: transparent !important;
+
+    color: #554b55 !important;
+
+    text-align: left;
+
+    cursor: pointer;
 }
 
 
-#st-dashboard-overlay .dashboard-icon-button {
+#dashboard-overlay .dashboard-select-item:hover,
+#dashboard-overlay .dashboard-select-item.active {
+
+    background:
+        rgba(226,195,211,0.42) !important;
+}
+
+
+#dashboard-overlay .dashboard-select-item > i {
+
+    width: 28px;
+
+    text-align: center;
+
+    color: #bd87a3 !important;
+}
+
+
+#dashboard-overlay .dashboard-select-item span {
+
+    display: flex;
+
+    flex-direction: column;
+
+    color: #554b55 !important;
+}
+
+
+#dashboard-overlay .dashboard-select-item small {
+
+    margin-top: 2px;
+
+    color: #aa98a3 !important;
+
+    font-size: 9px;
+}
+
+
+/* =====================================================
+   TOP ACTIONS
+   ===================================================== */
+
+#dashboard-overlay .dashboard-top-actions {
+
+    margin-left: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+}
+
+
+#dashboard-overlay .dashboard-icon-button {
 
     position: relative;
 
-    width: 52px;
-    height: 52px;
+    width: 38px;
+    height: 38px;
 
     display: flex;
 
     align-items: center;
     justify-content: center;
 
-    border: 1px solid
-        rgba(255,255,255,.72);
+    border: none !important;
 
-    border-radius: 50%;
+    border-radius: 50% !important;
 
     background:
-        rgba(255,255,255,.62);
+        rgba(255,255,255,0.5) !important;
 
-    color: #776b78;
-
-    font-size: 18px;
+    color: #6f6270 !important;
 
     cursor: pointer;
-
-    transition:
-        transform .18s ease,
-        background .18s ease;
-
 }
 
 
-#st-dashboard-overlay .dashboard-icon-button:hover {
-
-    transform: translateY(-2px);
-
-    background:
-        rgba(255,255,255,.85);
-
-}
-
-
-#st-dashboard-overlay .notification-dot {
+#dashboard-overlay .notification-dot {
 
     position: absolute;
 
-    top: 13px;
-    right: 13px;
+    top: 7px;
+    right: 7px;
 
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
 
     border-radius: 50%;
 
-    background: #d78eaa;
+    background: #d77e9e;
 
+    box-shadow:
+        0 0 0 2px #fff;
 }
 
 
-/* =========================================================
-   CONTENT
-   ========================================================= */
-
-#st-dashboard-overlay .dashboard-content {
-
-    width: 100%;
-
-    box-sizing: border-box;
-
-}
-
-
-#st-dashboard-overlay .dashboard-inner {
-
-    width: min(
-        1200px,
-        calc(100% - 48px)
-    );
-
-    margin: 0 auto;
-
-    padding:
-        38px
-        0
-        70px;
-
-}
-
-
-/* =========================================================
-   WELCOME
-   ========================================================= */
-
-#st-dashboard-overlay .dashboard-welcome {
-
-    position: relative;
+#dashboard-overlay .dashboard-time {
 
     display: flex;
 
-    align-items: flex-end;
+    flex-direction: column;
+
+    text-align: right;
+}
+
+
+#dashboard-overlay .dashboard-time small {
+
+    color: #9d8995 !important;
+
+    font-size: 9px;
+}
+
+
+#dashboard-overlay .dashboard-time strong {
+
+    color: #4b414b !important;
+
+    font-family:
+        Georgia,
+        serif;
+
+    font-size: 18px;
+}
+
+
+#dashboard-overlay .dashboard-close {
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none !important;
+
+    border-radius: 50% !important;
+
+    background:
+        rgba(255,255,255,0.5) !important;
+
+    color: #756775 !important;
+
+    font-size: 24px;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   PAGE AREA
+   ===================================================== */
+
+#dashboard-overlay .dashboard-pages {
+
+    position: relative;
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    padding:
+        25px 30px 35px;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+
+#dashboard-overlay .dashboard-page {
+
+    display: none;
+
+    width: 100%;
+
+    max-width: 1500px;
+
+    margin: 0 auto;
+}
+
+
+#dashboard-overlay .dashboard-page.active {
+
+    display: block;
+}
+
+
+/* =====================================================
+   WELCOME
+   ===================================================== */
+
+#dashboard-overlay .dashboard-welcome {
+
+    display: flex;
 
     justify-content: space-between;
 
-    margin-bottom: 30px;
+    align-items: center;
 
+    margin-bottom: 20px;
+
+    color: #514651;
 }
 
 
-#st-dashboard-overlay .welcome-small {
+#dashboard-overlay .dashboard-welcome > div:first-child > span {
 
-    font-family:
-        Georgia,
-        serif;
+    color: #a58f9c !important;
 
-    font-size: 17px;
-
-    letter-spacing: 1px;
-
-    color: #928792;
-
+    font-size: 12px;
 }
 
 
-#st-dashboard-overlay .dashboard-welcome h1 {
+#dashboard-overlay .dashboard-welcome h1 {
 
     margin:
-        5px
-        0
-        5px;
+        2px 0;
+
+    color: #514651 !important;
 
     font-family:
         Georgia,
-        "Times New Roman",
         serif;
 
-    font-size: clamp(
-        42px,
-        6vw,
-        64px
-    );
+    font-size: 30px;
 
     font-weight: 400;
-
-    color: #463c47;
-
 }
 
 
-#st-dashboard-overlay .dashboard-welcome p {
+#dashboard-overlay .dashboard-welcome p {
 
     margin: 0;
 
-    font-family:
-        Georgia,
-        serif;
+    color: #a08d98 !important;
 
-    font-size: 17px;
-
-    color: #8f828f;
-
+    font-size: 12px;
 }
 
 
-#st-dashboard-overlay .welcome-decoration {
+#dashboard-overlay .dashboard-sparkle {
 
-    margin-right: 50px;
+    color: #c68da8;
 
-    font-size: 62px;
+    font-size: 48px;
 
-    color: #d3a7cc;
-
-    opacity: .65;
-
-    transform:
-        rotate(12deg);
-
+    opacity: 0.5;
 }
 
 
-/* =========================================================
+/* =====================================================
    GRID
-   ========================================================= */
+   ===================================================== */
 
-#st-dashboard-overlay .dashboard-grid {
+#dashboard-overlay .dashboard-grid {
 
     display: grid;
 
     grid-template-columns:
-        repeat(12, 1fr);
+        1.1fr
+        1fr
+        0.65fr;
 
-    gap: 20px;
-
+    gap: 16px;
 }
 
 
-#st-dashboard-overlay .account-card {
+/* =====================================================
+   CARD
+   ===================================================== */
 
-    grid-column:
-        span 7;
-
-}
-
-
-#st-dashboard-overlay .bank-card {
-
-    grid-column:
-        span 5;
-
-}
-
-
-#st-dashboard-overlay .calendar-card {
-
-    grid-column:
-        span 5;
-
-}
-
-
-#st-dashboard-overlay .messages-card {
-
-    grid-column:
-        span 7;
-
-}
-
-
-#st-dashboard-overlay .tasks-card {
-
-    grid-column:
-        span 4;
-
-}
-
-
-#st-dashboard-overlay .quick-note-card {
-
-    grid-column:
-        span 8;
-
-}
-
-
-/* =========================================================
-   GLASS CARD
-   ========================================================= */
-
-#st-dashboard-overlay .dashboard-card {
+#dashboard-overlay .dashboard-card {
 
     position: relative;
 
-    box-sizing: border-box;
+    overflow: hidden;
 
-    padding: 26px;
-
-    border-radius: 30px;
-
-    background:
-        var(--dashboard-glass);
+    padding: 20px;
 
     border:
         1px solid
-        var(--dashboard-border);
+        rgba(255,255,255,0.78);
+
+    border-radius: 19px;
+
+    background:
+        rgba(255,255,255,0.55);
 
     box-shadow:
-        0 18px 45px
-        rgba(115, 95, 120, .08);
+        0 10px 35px
+        rgba(75,55,75,0.08);
 
     backdrop-filter:
-        blur(22px);
+        blur(20px);
 
     -webkit-backdrop-filter:
-        blur(22px);
-
+        blur(20px);
 }
 
 
-#st-dashboard-overlay .dashboard-card-header {
+#dashboard-overlay .card-header {
 
     display: flex;
 
-    align-items: flex-start;
-
     justify-content: space-between;
 
-    gap: 20px;
+    align-items: flex-start;
 
+    margin-bottom: 16px;
 }
 
 
-#st-dashboard-overlay .dashboard-card-label {
+#dashboard-overlay .card-label {
+
+    color: #a58d9b !important;
+
+    font-size: 9px;
+
+    letter-spacing: 2px;
+}
+
+
+#dashboard-overlay .card-header h2 {
+
+    margin:
+        3px 0 0;
+
+    color: #4a4149 !important;
 
     font-family:
         Georgia,
         serif;
 
-    font-size: 13px;
+    font-size: 18px;
 
-    letter-spacing: 3px;
-
-    color:
-        rgba(91, 77, 92, .58);
-
+    font-weight: 400;
 }
 
 
-#st-dashboard-overlay .dashboard-card-title {
+#dashboard-overlay .card-more {
 
-    margin-top: 7px;
+    border: none !important;
 
-    font-family:
-        Georgia,
-        serif;
+    background: transparent !important;
 
-    font-size: 21px;
-
-    color: #5d515f;
-
-}
-
-
-#st-dashboard-overlay .dashboard-card-more {
-
-    border: none;
-
-    background: transparent;
-
-    color: #887b88;
-
-    font-size: 17px;
+    color: #9b8995 !important;
 
     cursor: pointer;
-
 }
 
 
-/* =========================================================
-   ACCOUNT
-   ========================================================= */
+#dashboard-overlay .card-icon {
 
-#st-dashboard-overlay .account-main {
+    color: #b7829e !important;
+
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   GRID PLACEMENT
+   ===================================================== */
+
+#dashboard-overlay .account-card {
+    grid-column: 1;
+}
+
+
+#dashboard-overlay .bank-card {
+    grid-column: 2;
+}
+
+
+#dashboard-overlay .calendar-card {
+    grid-column: 3;
+}
+
+
+#dashboard-overlay .messages-card {
+    grid-column: 1;
+}
+
+
+#dashboard-overlay .tasks-card {
+    grid-column: 2;
+}
+
+
+#dashboard-overlay .notes-card {
+    grid-column: 3;
+}
+
+
+/* =====================================================
+   ACCOUNT
+   ===================================================== */
+
+#dashboard-overlay .account-main {
 
     display: flex;
 
     align-items: center;
 
-    gap: 22px;
-
-    margin-top: 25px;
-
+    gap: 18px;
 }
 
 
-#st-dashboard-overlay .account-avatar-wrap {
+#dashboard-overlay .profile-avatar {
 
     position: relative;
 
-    width: 122px;
-    height: 122px;
+    width: 86px;
+    height: 86px;
 
     flex-shrink: 0;
 
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #d6b9c7,
+            #aaa0bc
+        );
+
+    border:
+        5px solid
+        rgba(255,255,255,0.75);
+
+    box-shadow:
+        0 8px 20px
+        rgba(90,65,90,0.12);
 }
 
 
-#st-dashboard-overlay .account-avatar {
+#dashboard-overlay .profile-avatar img {
 
     width: 100%;
     height: 100%;
@@ -811,189 +839,158 @@
     object-fit: cover;
 
     border-radius: 50%;
-
-    border:
-        7px solid
-        rgba(255,255,255,.72);
-
-    box-sizing: border-box;
-
-    box-shadow:
-        0 12px 28px
-        rgba(110, 90, 120, .14);
-
 }
 
 
-#st-dashboard-overlay .account-avatar.fallback {
+#dashboard-overlay .avatar-placeholder {
 
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background:
-        linear-gradient(
-            145deg,
-            #c8a6c7,
-            #a78db8
-        );
-
-    color: white;
+    color: white !important;
 
     font-family:
         Georgia,
         serif;
 
-    font-size: 48px;
-
+    font-size: 30px;
 }
 
 
-#st-dashboard-overlay .account-online-dot {
+#dashboard-overlay .online-dot {
 
     position: absolute;
 
     right: 3px;
+    bottom: 7px;
 
-    bottom: 9px;
-
-    width: 17px;
-    height: 17px;
-
-    box-sizing: border-box;
+    width: 13px;
+    height: 13px;
 
     border-radius: 50%;
 
-    background: #8fc39d;
+    background: #6ec58b !important;
 
     border:
-        4px solid
-        rgba(255,255,255,.95);
-
+        3px solid
+        #fff;
 }
 
 
-#st-dashboard-overlay .account-info {
+#dashboard-overlay .account-info h2 {
 
-    min-width: 0;
+    margin: 0;
 
-}
-
-
-#st-dashboard-overlay .account-name {
+    color: #4a4149 !important;
 
     font-family:
         Georgia,
-        "Times New Roman",
         serif;
 
-    font-size: 31px;
+    font-size: 22px;
 
-    color: #514650;
-
-    word-break: break-word;
-
+    font-weight: 400;
 }
 
 
-#st-dashboard-overlay .account-status {
+#dashboard-overlay .account-info span {
 
-    display: flex;
+    color: #6fa17e !important;
 
-    align-items: center;
-
-    gap: 7px;
-
-    margin-top: 8px;
-
-    color: #88a58f;
-
-    font-size: 14px;
-
+    font-size: 10px;
 }
 
 
-#st-dashboard-overlay .account-status span {
+/* =====================================================
+   ACCOUNT EDIT AREA
+   ===================================================== */
 
-    width: 7px;
-    height: 7px;
+#dashboard-overlay .account-edit-area {
 
-    border-radius: 50%;
+    margin-top: 17px;
 
-    background: #8dbb99;
+    padding-top: 14px;
 
+    border-top:
+        1px solid
+        rgba(170,145,160,0.18);
 }
 
 
-/* =========================================================
-   ACCOUNT DESCRIPTION
-   ========================================================= */
+/*
+ * สำคัญมาก:
+ * ST มี CSS textarea ของตัวเอง
+ * เลยต้อง override แบบเจาะจง
+ */
 
-#st-dashboard-overlay .account-description-wrap {
+#dashboard-overlay .account-edit-area textarea,
+#dashboard-overlay #dashboard-bio {
 
-    margin-top: 25px;
+    width: 100% !important;
 
-}
+    min-height: 82px !important;
 
+    max-height: 180px;
 
-#st-dashboard-overlay .account-description-input {
-
-    width: 100%;
-
-    min-height: 75px;
+    display: block;
 
     box-sizing: border-box;
+
+    margin: 0 !important;
+
+    padding:
+        12px 14px !important;
 
     resize: vertical;
 
     border:
         1px solid
-        rgba(255,255,255,.65);
+        rgba(210,190,205,0.55) !important;
 
-    border-radius: 18px;
+    border-radius: 13px !important;
 
-    padding:
-        14px
-        17px;
-
-    outline: none;
+    outline: none !important;
 
     background:
-        rgba(255,255,255,.37);
+        rgba(255,255,255,0.58) !important;
 
-    color: #655b67;
+    color: #665a64 !important;
 
-    font-family: inherit;
+    -webkit-text-fill-color: #665a64 !important;
 
-    font-size: 15px;
+    font-family:
+        inherit !important;
 
-    line-height: 1.6;
+    font-size: 12px !important;
 
-    transition:
-        background .2s ease,
-        border .2s ease,
-        box-shadow .2s ease;
+    line-height: 1.6 !important;
 
+    box-shadow: none !important;
+
+    appearance: none !important;
 }
 
 
-#st-dashboard-overlay .account-description-input:focus {
+#dashboard-overlay #dashboard-bio::placeholder {
+
+    color: #ad9ba6 !important;
+
+    opacity: 1 !important;
+}
+
+
+#dashboard-overlay #dashboard-bio:focus {
 
     background:
-        rgba(255,255,255,.67);
+        rgba(255,255,255,0.75) !important;
 
     border-color:
-        rgba(190,145,190,.48);
+        rgba(199,145,170,0.55) !important;
 
     box-shadow:
         0 0 0 3px
-        rgba(190,145,190,.08);
-
+        rgba(199,145,170,0.08) !important;
 }
 
 
-#st-dashboard-overlay .account-edit-row {
+#dashboard-overlay .account-edit-bottom {
 
     display: flex;
 
@@ -1001,376 +998,170 @@
 
     justify-content: space-between;
 
-    gap: 12px;
-
-    margin-top: 10px;
-
-}
-
-
-#st-dashboard-overlay .account-edit-hint {
-
-    font-size: 12px;
-
-    color: #a296a3;
-
-}
-
-
-#st-dashboard-overlay .account-save-btn {
-
-    border: none;
-
-    border-radius: 12px;
-
-    padding:
-        8px
-        18px;
-
-    background:
-        rgba(180,142,179,.19);
-
-    color:
-        #8b6d89;
-
-    font-size: 13px;
-
-    cursor: pointer;
-
-    transition:
-        background .2s ease,
-        transform .15s ease;
-
-}
-
-
-#st-dashboard-overlay .account-save-btn:hover {
-
-    background:
-        rgba(180,142,179,.30);
-
-}
-
-
-#st-dashboard-overlay .account-save-btn:active {
-
-    transform: scale(.96);
-
-}
-
-
-/* =========================================================
-   BANK
-   ========================================================= */
-
-#st-dashboard-overlay .bank-icon {
-
-    font-size: 25px;
-
-    color: #a9789d;
-
-}
-
-
-#st-dashboard-overlay .bank-balance-card {
-
-    margin-top: 22px;
-
-    padding:
-        23px;
-
-    border-radius: 23px;
-
-    background:
-        rgba(244, 220, 235, .56);
-
-    border:
-        1px solid
-        rgba(255,255,255,.55);
-
-}
-
-
-#st-dashboard-overlay .bank-balance-label {
-
-    font-size: 13px;
-
-    color: #988995;
-
-}
-
-
-#st-dashboard-overlay .bank-balance {
+    gap: 10px;
 
     margin-top: 9px;
+}
+
+
+#dashboard-overlay .account-edit-bottom small {
+
+    color: #a2949d !important;
+
+    font-size: 9px;
+}
+
+
+#dashboard-overlay #dashboard-save-bio {
+
+    min-width: 90px;
+
+    padding:
+        9px 17px;
+
+    border: none !important;
+
+    border-radius: 12px !important;
+
+    background:
+        rgba(220,190,213,0.42) !important;
+
+    color: #8c6e83 !important;
+
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+
+#dashboard-overlay #dashboard-save-bio:hover {
+
+    background:
+        rgba(220,190,213,0.65) !important;
+}
+
+
+/* =====================================================
+   BANK
+   ===================================================== */
+
+#dashboard-overlay .bank-balance {
+
+    padding:
+        18px;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(250,220,233,0.72),
+            rgba(235,224,241,0.75)
+        );
+}
+
+
+#dashboard-overlay .bank-balance small {
+
+    color: #927f8b !important;
+
+    font-size: 10px;
+}
+
+
+#dashboard-overlay .bank-balance strong {
+
+    display: block;
+
+    margin:
+        4px 0 12px;
+
+    color: #3f3640 !important;
 
     font-family:
         Georgia,
         serif;
 
-    font-size: 39px;
+    font-size: 27px;
 
-    color: #423941;
-
+    font-weight: 400;
 }
 
 
-#st-dashboard-overlay .bank-balance.large {
+#dashboard-overlay .bank-balance span {
 
-    font-size: 58px;
+    color: #8d7c87 !important;
 
+    font-size: 10px;
+
+    letter-spacing: 2px;
 }
 
 
-#st-dashboard-overlay .bank-number {
-
-    margin-top: 18px;
-
-    font-family:
-        Georgia,
-        serif;
-
-    letter-spacing: 3px;
-
-    font-size: 14px;
-
-    color: #887c87;
-
-}
-
-
-#st-dashboard-overlay .bank-actions {
+#dashboard-overlay .bank-actions {
 
     display: grid;
 
     grid-template-columns:
         repeat(4, 1fr);
 
-    gap: 8px;
+    gap: 6px;
 
-    margin-top: 17px;
-
+    margin-top: 13px;
 }
 
 
-#st-dashboard-overlay .bank-actions button {
-
-    min-height: 65px;
-
-    border: none;
-
-    border-radius: 16px;
-
-    background:
-        rgba(255,255,255,.44);
-
-    color: #8f728b;
-
-    cursor: pointer;
-
-}
-
-
-#st-dashboard-overlay .bank-actions i {
-
-    display: block;
-
-    margin-bottom: 7px;
-
-    font-size: 16px;
-
-}
-
-
-#st-dashboard-overlay .bank-actions span {
-
-    font-size: 11px;
-
-}
-
-
-/* =========================================================
-   CALENDAR
-   ========================================================= */
-
-#st-dashboard-overlay .calendar-card > .dashboard-card-header > i {
-
-    color: #aa789e;
-
-    font-size: 21px;
-
-}
-
-
-#st-dashboard-overlay .dashboard-calendar {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(7, 1fr);
-
-    gap: 5px;
-
-    margin-top: 23px;
-
-}
-
-
-#st-dashboard-overlay .calendar-weekday {
-
-    padding-bottom: 8px;
-
-    text-align: center;
-
-    font-size: 11px;
-
-    color: #a196a1;
-
-}
-
-
-#st-dashboard-overlay .calendar-day {
-
-    aspect-ratio: 1;
+#dashboard-overlay .bank-actions button {
 
     display: flex;
 
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    font-size: 13px;
-
-    color: #6f6470;
-
-}
-
-
-#st-dashboard-overlay .calendar-day.calendar-selected {
-
-    color: white;
-
-    background:
-        linear-gradient(
-            145deg,
-            #c89fc3,
-            #aa8cb8
-        );
-
-    box-shadow:
-        0 5px 15px
-        rgba(170, 130, 170, .2);
-
-}
-
-
-#st-dashboard-overlay .calendar-empty {
-
-    aspect-ratio: 1;
-
-}
-
-
-/* =========================================================
-   MESSAGES
-   ========================================================= */
-
-#st-dashboard-overlay .message-count {
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    width: 25px;
-    height: 25px;
-
-    border-radius: 50%;
-
-    background:
-        rgba(190,145,185,.18);
-
-    color: #956f91;
-
-    font-size: 11px;
-
-}
-
-
-#st-dashboard-overlay .message-list {
-
-    margin-top: 17px;
-
-}
-
-
-#st-dashboard-overlay .message-item {
-
-    display: flex;
+    flex-direction: column;
 
     align-items: center;
 
-    gap: 13px;
+    gap: 6px;
 
     padding:
-        13px
-        0;
+        7px 3px;
 
-    border-bottom:
-        1px solid
-        rgba(100,80,100,.08);
+    border: none !important;
 
-}
-
-
-#st-dashboard-overlay .message-item:last-child {
-
-    border-bottom: none;
-
-}
-
-
-#st-dashboard-overlay .message-avatar {
-
-    width: 43px;
-    height: 43px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    border-radius: 50%;
+    border-radius: 10px !important;
 
     background:
-        linear-gradient(
-            145deg,
-            #d1b4cf,
-            #b29bbf
-        );
+        rgba(255,255,255,0.35) !important;
 
-    color: white;
+    color: #786975 !important;
 
-    font-family:
-        Georgia,
-        serif;
+    font-size: 9px;
 
+    cursor: pointer;
 }
 
 
-#st-dashboard-overlay .message-item > div:nth-child(2) {
+#dashboard-overlay .bank-actions i {
 
-    flex: 1;
+    color: #b7839f !important;
 
-    min-width: 0;
-
+    font-size: 14px;
 }
 
 
-#st-dashboard-overlay .message-item strong {
+/* =====================================================
+   CALENDAR
+   ===================================================== */
+
+#dashboard-overlay .calendar-card {
+
+    padding: 17px;
+}
+
+
+#dashboard-overlay .calendar-card h2 {
+
+    margin: 0;
+
+    color: #4a4149 !important;
 
     font-family:
         Georgia,
@@ -1378,729 +1169,837 @@
 
     font-size: 15px;
 
-    color: #5b505d;
-
+    font-weight: 400;
 }
 
 
-#st-dashboard-overlay .message-item p {
+#dashboard-overlay .calendar-arrows {
 
-    margin:
-        3px
-        0
-        0;
-
-    font-size: 13px;
-
-    color: #978c97;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-}
-
-
-#st-dashboard-overlay .message-item time {
-
-    font-size: 11px;
-
-    color: #aaa0aa;
-
-}
-
-
-/* =========================================================
-   TASKS
-   ========================================================= */
-
-#st-dashboard-overlay .task-list {
-
-    margin-top: 18px;
-
-}
-
-
-#st-dashboard-overlay .task-item {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 11px;
-
-    padding: 11px 0;
-
-    cursor: pointer;
-
-    color: #6e636f;
+    color: #9d8795;
 
     font-size: 14px;
-
 }
 
 
-#st-dashboard-overlay .task-item input {
+#dashboard-overlay .calendar-week,
+#dashboard-overlay .calendar-days {
 
-    appearance: none;
+    display: grid;
 
-    width: 19px;
-    height: 19px;
+    grid-template-columns:
+        repeat(7, 1fr);
 
-    flex-shrink: 0;
+    text-align: center;
 
-    border-radius: 6px;
-
-    border:
-        1px solid
-        rgba(145,125,145,.35);
-
-    background:
-        rgba(255,255,255,.4);
-
-    cursor: pointer;
-
+    gap: 5px;
 }
 
 
-#st-dashboard-overlay .task-item input:checked {
+#dashboard-overlay .calendar-week {
 
-    background:
-        #b895b3;
+    margin-bottom: 8px;
 
-    border-color:
-        #b895b3;
+    color: #a38f9b !important;
 
+    font-size: 8px;
 }
 
 
-#st-dashboard-overlay .task-item input:checked::after {
-
-    content: "✓";
+#dashboard-overlay .calendar-days span {
 
     display: flex;
 
     align-items: center;
     justify-content: center;
 
-    height: 100%;
+    height: 25px;
 
-    color: white;
+    color: #675b65 !important;
 
-    font-size: 12px;
-
+    font-size: 9px;
 }
 
 
-#st-dashboard-overlay .task-item input:checked + span {
+#dashboard-overlay .calendar-days .today {
 
-    text-decoration: line-through;
+    width: 25px;
 
-    opacity: .5;
+    justify-self: center;
 
-}
+    border-radius: 50%;
 
-
-/* =========================================================
-   QUICK NOTE
-   ========================================================= */
-
-#st-dashboard-overlay .quick-note-input {
-
-    width: 100%;
-
-    min-height: 130px;
-
-    box-sizing: border-box;
-
-    margin-top: 17px;
-
-    resize: vertical;
-
-    border: none;
-
-    outline: none;
-
-    border-radius: 18px;
-
-    padding: 16px;
+    color: white !important;
 
     background:
-        rgba(255,255,255,.35);
+        #cf91aa !important;
 
-    color: #625763;
-
-    font-family: inherit;
-
-    line-height: 1.6;
-
+    box-shadow:
+        0 4px 10px
+        rgba(190,120,150,0.25);
 }
 
 
-#st-dashboard-overlay .quick-note-input::placeholder {
-
-    color: #a99fa9;
-
-}
-
-
-/* =========================================================
-   SINGLE PAGES
-   ========================================================= */
-
-#st-dashboard-overlay .dashboard-single-page {
-
-    max-width: 900px;
-
-}
-
-
-#st-dashboard-overlay .dashboard-page-heading {
-
-    margin-bottom: 28px;
-
-}
-
-
-#st-dashboard-overlay .dashboard-page-heading h1 {
-
-    margin:
-        7px
-        0
-        5px;
-
-    font-family:
-        Georgia,
-        serif;
-
-    font-size: 44px;
-
-    font-weight: 400;
-
-    color: #4b414c;
-
-}
-
-
-#st-dashboard-overlay .dashboard-page-heading p {
-
-    margin: 0;
-
-    color: #948894;
-
-}
-
-
-#st-dashboard-overlay .account-page-card {
-
-    padding: 35px;
-
-}
-
-
-/* =========================================================
-   NOTES
-   ========================================================= */
-
-#st-dashboard-overlay .dashboard-main-note {
-
-    width: 100%;
-
-    min-height: 350px;
-
-    resize: vertical;
-
-    box-sizing: border-box;
-
-    border: none;
-
-    outline: none;
-
-    background:
-        transparent;
-
-    font-family:
-        Georgia,
-        serif;
-
-    font-size: 17px;
-
-    line-height: 1.8;
-
-    color: #5f555f;
-
-}
-
-
-/* =========================================================
-   FILES
-   ========================================================= */
-
-#st-dashboard-overlay .file-list {
-
-    padding-top: 12px;
-
-}
-
-
-#st-dashboard-overlay .file-item {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 15px;
-
-    padding: 17px 5px;
-
-    border-bottom:
-        1px solid
-        rgba(100,80,100,.08);
-
-}
-
-
-#st-dashboard-overlay .file-item:last-child {
-
-    border-bottom: none;
-
-}
-
-
-#st-dashboard-overlay .file-item > i {
-
-    width: 40px;
-
-    font-size: 21px;
-
-    color: #a67c9f;
-
-}
-
-
-#st-dashboard-overlay .file-item div {
+/* =====================================================
+   MESSAGES
+   ===================================================== */
+
+#dashboard-overlay .message-list {
 
     display: flex;
 
     flex-direction: column;
 
-    gap: 4px;
-
+    gap: 2px;
 }
 
 
-#st-dashboard-overlay .file-item strong {
-
-    font-family:
-        Georgia,
-        serif;
-
-    color: #5d515d;
-
-}
-
-
-#st-dashboard-overlay .file-item span {
-
-    font-size: 12px;
-
-    color: #a298a3;
-
-}
-
-
-/* =========================================================
-   SETTINGS
-   ========================================================= */
-
-#st-dashboard-overlay .setting-item {
+#dashboard-overlay .message-item {
 
     display: flex;
 
     align-items: center;
 
-    justify-content: space-between;
+    gap: 10px;
 
-    gap: 20px;
-
-    padding: 18px 4px;
+    padding:
+        9px 5px;
 
     border-bottom:
         1px solid
-        rgba(100,80,100,.08);
-
+        rgba(170,145,160,0.12);
 }
 
 
-#st-dashboard-overlay .setting-item:last-child {
+#dashboard-overlay .message-avatar {
 
-    border-bottom: none;
+    width: 32px;
+    height: 32px;
 
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    color: white !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #c9a8bb,
+            #9e9ab7
+        );
+
+    font-family:
+        Georgia,
+        serif;
+
+    font-size: 12px;
 }
 
 
-#st-dashboard-overlay .setting-item div {
+#dashboard-overlay .system-avatar {
+
+    background:
+        #a59ca9;
+}
+
+
+#dashboard-overlay .message-text {
+
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+#dashboard-overlay .message-text strong {
+
+    color: #4f4550 !important;
+
+    font-size: 11px;
+}
+
+
+#dashboard-overlay .message-text span {
+
+    overflow: hidden;
+
+    color: #9a8993 !important;
+
+    font-size: 9px;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+
+#dashboard-overlay .message-item time {
+
+    color: #aa98a3 !important;
+
+    font-size: 8px;
+}
+
+
+/* =====================================================
+   TASKS
+   ===================================================== */
+
+#dashboard-overlay .task-progress {
+
+    color: #a98798 !important;
+
+    font-size: 10px;
+}
+
+
+#dashboard-overlay .task-progress-bar {
+
+    height: 5px;
+
+    margin-bottom: 12px;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background:
+        rgba(190,160,180,0.18);
+}
+
+
+#dashboard-overlay .task-progress-bar div {
+
+    width: 40%;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #e4a8c1,
+            #bd9fc2
+        );
+}
+
+
+#dashboard-overlay .task-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding:
+        8px 0;
+
+    color: #665a64 !important;
+
+    font-size: 10px;
+
+    border-bottom:
+        1px solid
+        rgba(170,145,160,0.1);
+}
+
+
+#dashboard-overlay .task-item input {
+
+    accent-color:
+        #cf91aa;
+}
+
+
+#dashboard-overlay .task-item.done span {
+
+    color: #a2949d !important;
+
+    text-decoration:
+        line-through;
+}
+
+
+/* =====================================================
+   NOTES
+   ===================================================== */
+
+#dashboard-overlay .add-note {
+
+    width: 29px;
+    height: 29px;
+
+    border: none !important;
+
+    border-radius: 50% !important;
+
+    color: white !important;
+
+    background:
+        #d995b0 !important;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+
+#dashboard-overlay .note-content {
+
+    min-height: 75px;
+
+    padding:
+        15px;
+
+    border-radius: 14px;
+
+    color: #786773 !important;
+
+    background:
+        rgba(255,255,255,0.4);
+
+    font-size: 11px;
+
+    line-height: 1.8;
+}
+
+
+/* =====================================================
+   GENERIC PAGES
+   ===================================================== */
+
+#dashboard-overlay .page-heading {
+
+    margin:
+        25px 0;
+}
+
+
+#dashboard-overlay .page-heading > span {
+
+    color: #aa8d9c !important;
+
+    font-size: 10px;
+
+    letter-spacing: 3px;
+}
+
+
+#dashboard-overlay .page-heading h1 {
+
+    margin:
+        5px 0;
+
+    color: #4b4049 !important;
+
+    font-family:
+        Georgia,
+        serif;
+
+    font-size: 32px;
+
+    font-weight: 400;
+}
+
+
+#dashboard-overlay .page-heading p {
+
+    margin: 0;
+
+    color: #9c8994 !important;
+
+    font-size: 12px;
+}
+
+
+#dashboard-overlay .large-info-card,
+#dashboard-overlay .large-bank-card,
+#dashboard-overlay .full-list-card,
+#dashboard-overlay .empty-page-card,
+#dashboard-overlay .file-list-card,
+#dashboard-overlay .settings-list {
+
+    padding: 25px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.75);
+
+    border-radius: 20px;
+
+    background:
+        rgba(255,255,255,0.52);
+
+    box-shadow:
+        0 12px 35px
+        rgba(70,50,70,0.08);
+
+    backdrop-filter:
+        blur(20px);
+
+    -webkit-backdrop-filter:
+        blur(20px);
+}
+
+
+/* =====================================================
+   ACCOUNT PAGE
+   ===================================================== */
+
+#dashboard-overlay .large-info-card {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 25px;
+}
+
+
+#dashboard-overlay .large-avatar {
+
+    width: 110px;
+    height: 110px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    color: white !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #d6b8c8,
+            #a9a0bc
+        );
+
+    font-family:
+        Georgia,
+        serif;
+
+    font-size: 40px;
+}
+
+
+#dashboard-overlay .large-avatar img {
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+}
+
+
+#dashboard-overlay .large-info-card h2 {
+
+    margin: 0;
+
+    color: #4a4149 !important;
+
+    font-family:
+        Georgia,
+        serif;
+
+    font-size: 25px;
+
+    font-weight: 400;
+}
+
+
+#dashboard-overlay .status-badge {
+
+    color: #6e9d7c !important;
+
+    font-size: 11px;
+}
+
+
+/* =====================================================
+   BANK PAGE
+   ===================================================== */
+
+#dashboard-overlay .large-bank-card {
+
+    max-width: 500px;
+
+    padding: 35px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(251,218,232,0.8),
+            rgba(228,218,239,0.8)
+        );
+}
+
+
+#dashboard-overlay .large-bank-card small {
+
+    color: #917c89 !important;
+}
+
+
+#dashboard-overlay .large-bank-card strong {
+
+    display: block;
+
+    margin:
+        8px 0 20px;
+
+    color: #3f363f !important;
+
+    font-family:
+        Georgia,
+        serif;
+
+    font-size: 42px;
+
+    font-weight: 400;
+}
+
+
+#dashboard-overlay .large-bank-card span {
+
+    color: #8f7d88 !important;
+
+    letter-spacing: 3px;
+}
+
+
+/* =====================================================
+   FULL MESSAGE
+   ===================================================== */
+
+#dashboard-overlay .full-message {
+
+    display: grid;
+
+    grid-template-columns:
+        150px 1fr 80px;
+
+    gap: 20px;
+
+    padding:
+        16px 5px;
+
+    border-bottom:
+        1px solid
+        rgba(170,145,160,0.14);
+}
+
+
+#dashboard-overlay .full-message b {
+
+    color: #574a55 !important;
+}
+
+
+#dashboard-overlay .full-message span {
+
+    color: #8f7e89 !important;
+}
+
+
+#dashboard-overlay .full-message time {
+
+    color: #ae9aa5 !important;
+
+    text-align: right;
+}
+
+
+/* =====================================================
+   EMPTY
+   ===================================================== */
+
+#dashboard-overlay .empty-page-card {
+
+    min-height: 250px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+}
+
+
+#dashboard-overlay .empty-page-card i {
+
+    margin-bottom: 15px;
+
+    color: #c18fa7;
+
+    font-size: 30px;
+}
+
+
+#dashboard-overlay .empty-page-card h2 {
+
+    margin: 0;
+
+    color: #514651 !important;
+
+    font-family:
+        Georgia,
+        serif;
+
+    font-weight: 400;
+}
+
+
+#dashboard-overlay .empty-page-card p {
+
+    color: #9b8994 !important;
+
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   FILES
+   ===================================================== */
+
+#dashboard-overlay .file-list-card {
 
     display: flex;
 
     flex-direction: column;
 
     gap: 5px;
-
 }
 
 
-#st-dashboard-overlay .setting-item strong {
+#dashboard-overlay .file-list-card > div {
 
-    font-family:
-        Georgia,
-        serif;
+    display: grid;
 
-    font-size: 16px;
+    grid-template-columns:
+        35px 1fr auto;
 
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        12px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255,255,255,0.25);
 }
 
 
-#st-dashboard-overlay .setting-item span {
+#dashboard-overlay .file-list-card i {
 
-    font-size: 12px;
-
-    color: #9c929d;
-
+    color: #c08da6;
 }
 
 
-#st-dashboard-overlay .setting-item input {
+#dashboard-overlay .file-list-card span {
 
-    width: 43px;
-    height: 23px;
+    color: #635762 !important;
 
-    accent-color:
-        #b18aaa;
-
+    font-size: 11px;
 }
 
 
-/* =========================================================
-   LARGE BANK
-   ========================================================= */
+#dashboard-overlay .file-list-card small {
 
-#st-dashboard-overlay .large-bank-card {
-
-    padding: 40px;
-
+    color: #a18d99 !important;
 }
 
 
-/* =========================================================
-   RESPONSIVE — TABLET
-   ========================================================= */
+/* =====================================================
+   SETTINGS
+   ===================================================== */
 
-@media (max-width: 900px) {
+#dashboard-overlay .settings-list {
 
-    #st-dashboard-overlay .dashboard-header {
+    padding: 10px;
+}
+
+
+#dashboard-overlay .settings-list button {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        35px 1fr 20px;
+
+    align-items: center;
+
+    padding:
+        15px;
+
+    border: none !important;
+
+    border-bottom:
+        1px solid
+        rgba(170,145,160,0.13);
+
+    background: transparent !important;
+
+    color: #665964 !important;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+
+#dashboard-overlay .settings-list button:last-child {
+
+    border-bottom: none;
+}
+
+
+#dashboard-overlay .settings-list button > i:first-child {
+
+    color: #bf8fa6 !important;
+}
+
+
+#dashboard-overlay .settings-list button > i:last-child {
+
+    color: #aa98a3 !important;
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   FOOTER
+   ===================================================== */
+
+#dashboard-overlay .dashboard-footer {
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding:
+        9px 25px;
+
+    color: #aa98a3 !important;
+
+    background:
+        rgba(255,250,253,0.4);
+
+    border-top:
+        1px solid
+        rgba(255,255,255,0.55);
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+}
+
+
+#dashboard-overlay .dashboard-footer div {
+
+    display: flex;
+
+    gap: 12px;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 800px) {
+
+    #dashboard-overlay .dashboard-topbar {
+
+        min-height: 72px;
+
+        gap: 8px;
 
         padding:
-            18px
-            20px;
-
-        gap: 12px;
+            10px 12px;
 
     }
 
 
-    #st-dashboard-overlay .dashboard-brand-text {
+    #dashboard-overlay .dashboard-brand {
+
+        min-width: auto;
+
+    }
+
+
+    #dashboard-overlay .dashboard-brand > div:last-child {
 
         display: none;
 
     }
 
 
-    #st-dashboard-overlay .dashboard-navigation {
-
-        margin-left: 0;
-
-        min-width: 170px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-inner {
-
-        width:
-            calc(100% - 32px);
-
-        padding-top: 28px;
-
-    }
-
-
-    #st-dashboard-overlay .account-card,
-    #st-dashboard-overlay .bank-card,
-    #st-dashboard-overlay .calendar-card,
-    #st-dashboard-overlay .messages-card,
-    #st-dashboard-overlay .tasks-card,
-    #st-dashboard-overlay .quick-note-card {
-
-        grid-column:
-            span 6;
-
-    }
-
-}
-
-
-/* =========================================================
-   RESPONSIVE — MOBILE
-   ========================================================= */
-
-@media (max-width: 650px) {
-
-    #st-dashboard-overlay .dashboard-header {
-
-        min-height: 82px;
-
-        padding:
-            14px;
-
-        gap: 8px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-brand-icon {
-
-        width: 48px;
-        height: 48px;
-
-        border-radius: 16px;
-
-        font-size: 18px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-navigation {
-
-        flex: 1;
-
-        min-width: 0;
-
-        padding:
-            7px
-            9px;
-
-        border-radius: 20px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-nav-icon {
+    #dashboard-overlay .dashboard-logo {
 
         width: 42px;
         height: 42px;
-
-        border-radius: 13px;
-
-        font-size: 17px;
-
-    }
-
-
-    #st-dashboard-overlay #dashboard-current-title {
-
-        font-size: 15px;
-
-    }
-
-
-    #st-dashboard-overlay #dashboard-current-subtitle {
-
-        font-size: 10px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-header-actions {
-
-        gap: 5px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-icon-button {
-
-        width: 43px;
-        height: 43px;
-
-        font-size: 15px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-inner {
-
-        width:
-            calc(100% - 22px);
-
-        padding:
-            25px
-            0
-            50px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-welcome {
-
-        margin-bottom: 22px;
-
-    }
-
-
-    #st-dashboard-overlay .welcome-small {
-
-        font-size: 14px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-welcome h1 {
-
-        font-size: 42px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-welcome p {
-
-        font-size: 14px;
-
-    }
-
-
-    #st-dashboard-overlay .welcome-decoration {
-
-        margin-right: 15px;
-
-        font-size: 42px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-grid {
-
-        display: flex;
-
-        flex-direction: column;
-
-        gap: 14px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-card {
-
-        padding: 20px;
-
-        border-radius: 24px;
-
-    }
-
-
-    #st-dashboard-overlay .account-avatar-wrap {
-
-        width: 92px;
-        height: 92px;
-
-    }
-
-
-    #st-dashboard-overlay .account-name {
-
-        font-size: 25px;
-
-    }
-
-
-    #st-dashboard-overlay .account-main {
-
-        gap: 15px;
-
-    }
-
-
-    #st-dashboard-overlay .bank-balance {
-
-        font-size: 31px;
-
-    }
-
-
-    #st-dashboard-overlay .bank-actions {
-
-        gap: 5px;
-
-    }
-
-
-    #st-dashboard-overlay .bank-actions button {
-
-        min-height: 58px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-page-heading h1 {
-
-        font-size: 36px;
-
-    }
-
-
-    #st-dashboard-overlay .account-page-card {
-
-        padding: 25px;
-
-    }
-
-}
-
-
-/* =========================================================
-   VERY SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 420px) {
-
-    #st-dashboard-overlay .dashboard-header {
-
-        padding:
-            11px;
-
-    }
-
-
-    #st-dashboard-overlay .dashboard-brand-icon {
-
-        width: 43px;
-        height: 43px;
 
         border-radius: 14px;
 
     }
 
 
-    #st-dashboard-overlay .dashboard-navigation {
+    #dashboard-overlay .dashboard-selector {
 
-        padding: 6px;
+        width: auto;
+
+        flex: 1;
+
+        min-width: 0;
 
     }
 
 
-    #st-dashboard-overlay .dashboard-nav-icon {
+    #dashboard-overlay .dashboard-selector-button {
+
+        min-height: 52px;
+
+        padding:
+            7px 10px;
+
+        border-radius: 15px !important;
+
+    }
+
+
+    #dashboard-overlay .dashboard-current-icon {
 
         width: 38px;
         height: 38px;
@@ -2108,7 +2007,159 @@
     }
 
 
-    #st-dashboard-overlay .dashboard-icon-button {
+    #dashboard-overlay .dashboard-top-actions {
+
+        margin-left: 0;
+
+        gap: 5px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-time {
+
+        display: none;
+
+    }
+
+
+    #dashboard-overlay .dashboard-icon-button,
+    #dashboard-overlay .dashboard-close {
+
+        width: 42px;
+        height: 42px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-pages {
+
+        flex: 1;
+
+        min-height: 0;
+
+        padding:
+            18px 12px 28px;
+
+        overflow-y: auto;
+
+    }
+
+
+    #dashboard-overlay .dashboard-grid {
+
+        grid-template-columns: 1fr;
+
+        gap: 12px;
+
+    }
+
+
+    #dashboard-overlay .account-card,
+    #dashboard-overlay .bank-card,
+    #dashboard-overlay .calendar-card,
+    #dashboard-overlay .messages-card,
+    #dashboard-overlay .tasks-card,
+    #dashboard-overlay .notes-card {
+
+        grid-column: 1;
+
+    }
+
+
+    #dashboard-overlay .dashboard-welcome {
+
+        margin-bottom: 17px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-welcome h1 {
+
+        font-size: 28px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-sparkle {
+
+        font-size: 38px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-card {
+
+        padding: 18px;
+
+        border-radius: 19px;
+
+    }
+
+
+    #dashboard-overlay .account-main {
+
+        gap: 15px;
+
+    }
+
+
+    #dashboard-overlay .profile-avatar {
+
+        width: 82px;
+        height: 82px;
+
+    }
+
+
+    #dashboard-overlay .bank-balance strong {
+
+        font-size: 26px;
+
+    }
+
+
+    #dashboard-overlay .calendar-days span {
+
+        height: 29px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-footer {
+
+        padding:
+            7px 12px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-footer > span {
+
+        display: none;
+
+    }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+   ===================================================== */
+
+@media (max-width: 430px) {
+
+    #dashboard-overlay .dashboard-topbar {
+
+        min-height: 70px;
+
+        padding:
+            9px 8px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-logo {
 
         width: 39px;
         height: 39px;
@@ -2116,42 +2167,121 @@
     }
 
 
-    #st-dashboard-overlay .account-avatar-wrap {
+    #dashboard-overlay .dashboard-selector-button {
 
-        width: 80px;
-        height: 80px;
-
-    }
-
-
-    #st-dashboard-overlay .account-name {
-
-        font-size: 22px;
+        min-height: 50px;
 
     }
 
 
-    #st-dashboard-overlay .account-edit-row {
+    #dashboard-overlay .dashboard-current-icon {
 
-        align-items: flex-end;
+        width: 35px;
+        height: 35px;
 
     }
 
 
-    #st-dashboard-overlay .account-edit-hint {
+    #dashboard-overlay .dashboard-selector-button strong {
 
-        font-size: 10px;
+        font-size: 12px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-selector-button small {
+
+        font-size: 9px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-icon-button,
+    #dashboard-overlay .dashboard-close {
+
+        width: 39px;
+        height: 39px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-pages {
+
+        padding:
+            15px 10px 25px;
+
+    }
+
+
+    #dashboard-overlay .dashboard-welcome h1 {
+
+        font-size: 27px;
+
+    }
+
+
+    #dashboard-overlay .account-edit-area textarea,
+    #dashboard-overlay #dashboard-bio {
+
+        min-height: 76px !important;
+
+        font-size: 12px !important;
+
+    }
+
+
+    #dashboard-overlay .account-edit-bottom small {
+
+        font-size: 8px;
+
+    }
+
+
+    #dashboard-overlay #dashboard-save-bio {
+
+        min-width: 82px;
+
+        padding:
+            8px 13px;
+
+    }
+
+
+    #dashboard-overlay .bank-actions {
+
+        gap: 4px;
+
+    }
+
+
+    #dashboard-overlay .bank-actions button {
+
+        padding:
+            7px 2px;
 
     }
 
 }
 
 
-/* =========================================================
-   SILLYTAVERN FULLSCREEN
-   ========================================================= */
+/* =====================================================
+   FULLSCREEN
+   ===================================================== */
 
-:fullscreen #st-dashboard-overlay {
+html:fullscreen,
+html:fullscreen body {
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+}
+
+
+html:fullscreen #dashboard-overlay {
 
     width: 100vw;
     height: 100vh;
@@ -2159,64 +2289,58 @@
 }
 
 
-:-webkit-full-screen #st-dashboard-overlay {
-
-    width: 100vw;
-    height: 100vh;
-
-}
-
-
-/* =========================================================
+/* =====================================================
    SCROLLBAR
-   ========================================================= */
+   ===================================================== */
 
-#st-dashboard-overlay .dashboard-app::-webkit-scrollbar {
+#dashboard-overlay .dashboard-pages::-webkit-scrollbar {
 
-    width: 7px;
+    width: 6px;
 
 }
 
 
-#st-dashboard-overlay .dashboard-app::-webkit-scrollbar-track {
+#dashboard-overlay .dashboard-pages::-webkit-scrollbar-track {
 
     background: transparent;
 
 }
 
 
-#st-dashboard-overlay .dashboard-app::-webkit-scrollbar-thumb {
+#dashboard-overlay .dashboard-pages::-webkit-scrollbar-thumb {
 
-    border-radius: 20px;
+    border-radius: 10px;
 
     background:
-        rgba(150,125,150,.25);
+        rgba(160,130,150,0.25);
 
 }
 
 
-/* =========================================================
-   REMOVE ST DEFAULT INTERFERENCE
-   ========================================================= */
+/* =====================================================
+   IMPORTANT ST OVERRIDES
+   ===================================================== */
 
-#st-dashboard-overlay button {
+#dashboard-overlay button,
+#dashboard-overlay input,
+#dashboard-overlay textarea {
 
     font-family: inherit;
 
 }
 
 
-#st-dashboard-overlay textarea {
+#dashboard-overlay button {
 
     appearance: none;
 
 }
 
 
-#st-dashboard-overlay *,
-#st-dashboard-overlay *::before,
-#st-dashboard-overlay *::after {
+#dashboard-overlay textarea {
 
-    box-sizing: border-box;
+    appearance: none;
 
-}
+    -webkit-appearance: none;
+
+       }
