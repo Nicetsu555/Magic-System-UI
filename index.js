@@ -40,8 +40,9 @@ const DASHBOARD_EXT_KEY = 'dashboardWidget';
 // Paste a direct image link (e.g. from an image host) between the
 // quotes. Leave empty ('') to fall back to a plain gradient / a
 // plain star glyph until you have links ready.
-const DASHBOARD_WELCOME_BACKGROUND_URL = '';
-const DASHBOARD_WELCOME_STAR_URL = '';
+const DASHBOARD_WELCOME_BACKGROUND_URL = 'https://files.catbox.moe/bjknck.png
+';
+const DASHBOARD_WELCOME_STAR_URL = 'https://files.catbox.moe/9xwggq.png';
 
 function getDashboardContext() {
 
